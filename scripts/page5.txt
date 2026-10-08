@@ -1,0 +1,60 @@
+428 S-142888 State Board School Gurukul School Bidagalu English Kempanna Primary (Class 1st-5th) 998037662 N/A Bidagalu Mysuru KarnatakaMysuru 571121 Non-User 21536 No KA23 Mysuru
+429 S-142890 State Board School Vishwa Bharathi School English Paramesh Primary (Class 1st-5th) 7411055662 N/A H D Kote Mysuru KarnatakaMysuru 571114 Non-User 21536 No KA23 Mysuru
+430 S-143163 State Board School Young Scholar School Gundlupet English N/A Primary (Class 1st-5th) 914822363 N/A Chamara Nagar Road, Gundlupet Chamarajanaga KarnatakaChamarajanaga 571111 Non-User 21536 No KA08 Mysuru
+431 S-143199 State Board School Bharath Vikas School Nanjangud English N/A Primary (Class 1st-5th) 959191148 N/A Court House, Nanjangud Mysuru KarnatakaMysuru 571301 Non-User 21536 No KA23 Mysuru
+432 S-143362 Play School Super Kidz Pre School English N/A Pre- Primary (Play School) 962061046 N/A Hosuru Kallahally, K R Nagar Mysuru KarnatakaMysuru 571602 Non-User 21536 No KA23 Mysuru
+433 S-143368 State Board School Karunadu Jnanodaya Vidya Samsthe K R Nagar English N/A Other 959191148 N/A Kalenahalli Road, Kr Nagar Mysuru KarnatakaMysuru 571602 Non-User 21536 No KA23 Mysuru
+434 S-143470 State Board School Shree Ramakrishna Vidya Samsthe K R Nagar English N/A Primary (Class 1st-5th) 725977679 N/A Arkanatha Road, 8Th Cross, K R Nagar Mysuru KarnatakaMysuru 571602 Non-User 21536 No KA23 Mysuru
+435 S-143894 Cbse School Bss Vidyodaya English N/A Primary (Class 1st-5th) 990095036 N/A Krishna Murthy Puram, Mysore Mysuru KarnatakaMysuru 570004 Non-User 21536 No KA23 Mysuru
+436 S-144931 Cbse School Wisdom School K R Nagar English Principal Primary (Class 1st-5th) 821241731 N/A K R Nagar Mysuru KarnatakaMysuru 570005 Non-User 21536 No KA23 Mysuru
+437 S-145311 State Board School Arohana Central School English Principal Primary (Class 1st-5th) 9591911489 N/A Somanathapura, Mysore Mysuru KarnatakaMysuru 571120 Non-User 21536 No KA23 Mysuru
+438 S-145315 State Board School Vasavi School T Narsipura English Principal Primary (Class 1st-5th) 822726107 N/A T Narasipura Mysuru KarnatakaMysuru 571124 Non-User 21536 No KA23 Mysuru
+439 S-145492 State Board School Jeevodaya English Medium School Arakere English N/A Primary (Class 1st-5th) 959191148 N/A Arakere, Mandya District Mandya KarnatakaMandya 571415 Non-User 21536 No KA22 Mysuru
+440 S-145493 State Board School Poornima School Arakere English N/A Primary (Class 1st-5th) 959191148 N/A Arakere, Mandya District Mandya KarnatakaMandya 571415 Non-User 21536 No KA22 Mysuru
+441 S-145494 State Board School Vidya Ganapathi School Kothathi English N/A Primary (Class 1st-5th) 959191148 N/A Kothathi Mandya KarnatakaMandya 571478 Non-User 21536 No KA22 Mysuru
+442 S-145498 Play School Alpha Benaka Kids English N/A Pre- Primary (Play School) 959191148 N/A Ragavendra Nagar , Mysore Mysuru KarnatakaMysuru 570029 Non-User 21536 No KA23 Mysuru
+443 S-145501 Play School Kids Care Pre School English N/A Pre- Primary (Play School) 959191148 N/A Vidyashankar Layout, Mysore Mysuru KarnatakaMysuru 570029 Non-User 21536 No KA23 Mysuru
+444 S-145854 State Board School Sharada Vidya Smasthe B Mategere English Chikkayya Primary (Class 1st-5th) 974205304 N/A B Matagere,H D Kote Mysuru KarnatakaMysuru 571121 Non-User 21536 No KA23 Mysuru
+445 S-145917 State Board School Mrnv Vidya Samsthe Hunsur English N/A Primary (Class 1st-5th) 959191148 N/A Hunsur, Mysore District Mysuru KarnatakaMysuru 571105 Non-User 21536 No KA23 Mysuru
+446 S-145918 State Board School Andullam School Hunsur English N/A Primary (Class 1st-5th) 959191148 N/A Hunsur, Mysore District Mysuru KarnatakaMysuru 571105 Non-User 21536 No KA23 Mysuru
+447 S-145923 State Board School Brilliance School Hunsur English N/A Primary (Class 1st-5th) 959191148 N/A Hunsur, Mysore District Mysuru KarnatakaMysuru 571105 Non-User 21536 No KA23 Mysuru
+448 S-145924 State Board School Madhava Vidya Samthe Hunsur English N/A Primary (Class 1st-5th) 934222006 N/A Hunsur, Mysore District Mysuru KarnatakaMysuru 571105 Non-User 21536 No KA23 Mysuru
+449 S-145925 State Board School Chayadeve School Hunsur English N/A Primary (Class 1st-5th) 959191148 N/A Hunsur , Mysore District Mysuru KarnatakaMysuru 571105 Non-User 21536 No KA23 Mysuru
+450 S-145926 State Board School Rotary School Hunsur English N/A Primary (Class 1st-5th) 959191148 N/A Hunsur, Mysore District Mysuru KarnatakaMysuru 571105 Non-User 21536 No KA23 Mysuru
+451 S-146448 State Board School Gurujana Vidalaya English Shivkumar N/A 996402203 N/A Gandhinagar, Mandya Mandya KarnatakaMandya 571401 Non-User 21536 Yes KA22 Mysuru
+452 S-146827 State Board School Cnm Public School Mahadevpura N/A Principal Primary (Class 1st-5th) 959191148 N/A Mahadevpura , Mysore Mysuru KarnatakaMysuru 570034 Non-User 21536 No KA23 Mysuru
+453 S-147815 State Board School Poorna Prajna Vidya Kendra English Principal Primary (Class 1st-5th) 959191148 N/A Kuvrmpunagar, Mysore Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+454 S-148140 Play School Sai Gurukula Pre School Hebbal English Principal Pre- Primary (Play School) 737396966 N/A Hebbal 2Nd Stage, Mysore Mysuru KarnatakaMysuru 570017 Non-User 21536 No KA23 Mysuru
+455 S-148141 State Board School Subhodaya School Kuvrmpunagar English Principal Primary (Class 1st-5th) 959191148 N/A Kuvrmpunagar,Mysore Mysuru KarnatakaMysuru 570023 Non-User 21536 No KA23 Mysuru
+456 S-148142 State Board School Jyothi School English Principal Primary (Class 1st-5th) 984519228 N/A Kuvrmpunagar, Mysore Mysuru KarnatakaMysuru 570023 Non-User 21536 No KA23 Mysuru
+457 S-148249 State Board School Sri Aravinda English School Hassan English Sunitha Palaksh Secondary (Class 6th-10) 817226973 N/A Kuvempu Nagar, Krishnaraja Pura, Hassan, Karnataka Hassan KarnatakaHassan 573201 Non-User 21536 Yes KA16 Mysuru
+458 S-150035 State Board School All Nations Public School English Principal Primary (Class 1st-5th) 959191148 N/A Hyrige, Karnataka Mysuru KarnatakaMysuru 571125 Non-User 21536 No KA23 Mysuru
+459 S-152018 Cbse School Jss Public School, Siddhartha Layout,Mysuru English Mrs.B Latha Secondary (Class 6th-10) 821254826 jsspssnagar@gmail.com Vinaya Marga, Siddhartha Layout,Mysuru-570011, Karnataka Mysuru KarnatakaMysuru 570011 Non-User 21536 Yes KA23 Mysuru
+460 S-155271 State Board School Floriana School T Narasipura English Principal Primary (Class 1st-5th) 984591611 N/A T Narasipura Mysuru KarnatakaMysuru 571124 Non-User 21536 No KA23 Mysuru
+461 S-156041 State Board School Sri Viveka Vidyalaya Global English School English Principal Primary (Class 1st-5th) 997277827 N/A Srirampura, Mysore Mysuru KarnatakaMysuru 570034 Non-User 21536 No KA23 Mysuru
+462 S-156180 Play School Vidyadeep School Alanahalli English Principal Pre- Primary (Play School) 959191148 N/A Alanahalli, Mysore Mysuru KarnatakaMysuru 570028 Non-User 21536 No KA23 Mysuru
+463 S-156181 State Board School Viveku Vidyalaya English Medium School Alanahalli English Principal Primary (Class 1st-5th) 959191148 N/A Alanahalli, Mysore Mysuru KarnatakaMysuru 570028 Non-User 21536 No KA23 Mysuru
+464 S-156333 Play School My First School English Principal Pre- Primary (Play School) 968633547 N/A Ramakrishna Nagar H Block, Myosre Mysuru KarnatakaMysuru 570034 Non-User 21536 No KA23 Mysuru
+465 S-156334 Play School Buds House Of Montessori English Principal Pre- Primary (Play School) 903681447 N/A Vivekananda Nagar, Mysore Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+466 S-156335 Play School Kidzee Pre School English Principal Pre- Primary (Play School) 984423507 N/A Vivekananda Nagar Mysore Mysuru KarnatakaMysuru 570034 Non-User 21536 No KA23 Mysuru
+467 S-156336 Play School Aaryan Kids Srirampura N/A Principal Pre- Primary (Play School) 702612448 N/A Srirampura, Mysore Mysuru KarnatakaMysuru 570034 Non-User 21536 No KA23 Mysuru
+468 S-156387 Play School Sri Acharya Gurukula Montessori School Kadakola English Principal Pre- Primary (Play School) 959191148 N/A Kadakola, Mysore Mysuru KarnatakaMysuru 571311 Non-User 21536 No KA23 Mysuru
+469 S-156388 Icse-School Acharya International Icse School Kadakola English Principal Primary (Class 1st-5th) 959191148 N/A Kadkola, Mysore Mysuru KarnatakaMysuru 571302 Non-User 21536 No KA23 Mysuru
+470 S-156400 State Board School Gnana Vahini School Srirampura English Principal Primary (Class 1st-5th) 821236188 N/A Srirampura, Mysore Mysuru KarnatakaMysuru 570034 Non-User 21536 No KA23 Mysuru
+471 S-156401 Play School Lisa 1St Step Pre School English Principal Pre- Primary (Play School) 924307848 N/A Srirampura, Musore Mysuru KarnatakaMysuru 570034 Non-User 21536 No KA23 Mysuru
+472 S-156402 Play School Divine Kids Pre School Srirampura English Principal Pre- Primary (Play School) 789248170 N/A Srirampura, Mysore Mysuru KarnatakaMysuru 570034 Non-User 21536 No KA23 Mysuru
+473 S-156403 Play School Smart School Junior Srirampura English Principal Pre- Primary (Play School) 959191148 N/A Srirampura, Mysore Mysuru KarnatakaMysuru 570034 Non-User 21536 No KA23 Mysuru
+474 S-156404 Play School Basil Buds International School English N/A Pre- Primary (Play School) 959191148 N/A Kuvrmpunagar, Mysore Mysuru KarnatakaMysuru 570023 Non-User 21536 No KA23 Mysuru
+475 S-156503 Play School Vedic Pre School Saraswathipuram English Principal Pre- Primary (Play School) 910810839 N/A Saraswathipuram, Mysore Mysuru KarnatakaMysuru 570009 Non-User 21536 No KA23 Mysuru
+476 S-156504 Play School Tiny Teddys Pre School Saraswathipuram English Principal Pre- Primary (Play School) 996404279 N/A Saraswathipuram, Mysore Mysuru KarnatakaMysuru 570009 Non-User 21536 No KA23 Mysuru
+477 S-162376 Play School Honey Bee Kidz Pre School English Principal Pre- Primary (Play School) 994527272 N/A Lalithadripuram, Mysore Mysuru KarnatakaMysuru 570028 Non-User 21536 No KA23 Mysuru
+478 S-162377 State Board School Supreme School Sd Nagar English Principal Primary (Class 1st-5th) 959191148 N/A Sharaddevinagar, Mysore Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+479 S-162584 State Board School Ravindra School Hebbalaguppe English Principal Primary (Class 1st-5th) 959191148 N/A Hebbalaguppe, Mysore Mysuru KarnatakaMysuru 571114 Non-User 21536 No KA23 Mysuru
+480 S-162840 State Board School Sri Srikanteshwara Vidya Samsthe Hullahalli English Principal Primary (Class 1st-5th) 959191158 N/A Hullahalli, Mysore Mysuru KarnatakaMysuru 571314 Non-User 21536 No KA23 Mysuru
+481 S-162997 Play School Bizi Brain Pre School English Principal Pre- Primary (Play School) 819793211 N/A Bogadhi , Mysore Mysuru KarnatakaMysuru 570033 Non-User 21536 No KA23 Mysuru
+482 S-162998 Play School Tiny Treasure Pre School Vijayanagar English Nalini Pre- Primary (Play School) 994545644 N/A Vijayanagar, Mysore Mysuru KarnatakaMysuru 570017 Non-User 21536 No KA23 Mysuru
+483 S-163001 Play School Green Wings Pre School English Principal Pre- Primary (Play School) 959191149 N/A Kuvrmpunagar, Mysore Mysuru KarnatakaMysuru 570023 Non-User 21536 No KA23 Mysuru
+484 S-163002 Play School Kids Academy Gokulam English Manish Pre- Primary (Play School) 959191148 N/A Gokulam, Mysore Mysuru KarnatakaMysuru 570002 Non-User 21536 No KA23 Mysuru
+485 S-163331 Play School Pusthi Pre School English Principal Pre- Primary (Play School) 997200221 N/A Chikkalli , Mysore Mysuru KarnatakaMysuru 570028 Non-User 21536 No KA23 Mysuru
+486 S-165616 State Board School Dhatri Vidyalaya Hulikere English Ramadevi Primary (Class 1st-5th) 934359990 N/A Hulikere Mandya KarnatakaMandya 571606 Non-User 21536 No KA22 Mysuru
+487 S-166018 State Board School Model English High School Javagal Hassan English Dr.Vinay Secondary (Class 6th-10) 944806224 N/A Javagal Arasikere Hassan Hassan KarnatakaHassan 573125 Non-User 21536 No KA16 Mysuru

@@ -1,0 +1,107 @@
+214 S-74992 State Board School Mahaveer School Srirampura English Anitha Primary (Class 1st-5th) 948229623 N/A Srirampura Mysuru KarnatakaMysuru 570008 Non-User 21536 No KA23 Mysuru
+215 S-75024 State Board School Bharatiya Vidya Bhavan School Vijayanagar English Principal Primary (Class 1st-5th) 0821 N/A Vijayanagar Mysuru KarnatakaMysuru 570017 Non-User 21536 No KA23 Mysuru
+216 S-75118 State Board School St Joseph School H D Kote English Principal Primary (Class 1st-5th) 0821 N/A H D Kote Mysuru KarnatakaMysuru 571114 Non-User 21536 No KA23 Mysuru
+217 S-75137 State Board School Adhichunchanagiri School H D Kote English Nandini Primary (Class 1st-5th) 0821 N/A H D Kote Mysuru KarnatakaMysuru 571114 Non-User 21536 No KA23 Mysuru
+218 S-75171 State Board School Mmk Public School English John Primary (Class 1st-5th) 813107216 N/A Thumsoge Mysuru KarnatakaMysuru 571121 User 21536 No KA23 Mysuru
+219 S-75173 State Board School Pragathi Educational Institutions English Sathish Secondary (Class 6th-10) 998088884 N/A Sargur Mysuru KarnatakaMysuru 571121 Non-User 21536 No KA23 Mysuru
+220 S-75174 State Board School Lions School Sargur N/A Dasachari Primary (Class 1st-5th) 990241800 N/A Sargur Mysuru KarnatakaMysuru 571121 Non-User 21536 No KA23 Mysuru
+221 S-75271 State Board School Marimallappa English School Vijayanagar English Mahindra Primary (Class 1st-5th) 827705623 N/A Vijayanagar 4Th Stage Mysuru KarnatakaMysuru 570032 Non-User 21536 No KA23 Mysuru
+222 S-75285 State Board School K P Convent English Samuel N Boje Primary (Class 1st-5th) 953803244 N/A Vijaynagar 2Nd Stage Mysuru KarnatakaMysuru 570002 Non-User 21536 No KA23 Mysuru
+223 S-75329 State Board School Visha Prajna School English Sudha Primary (Class 1st-5th) 903536135 N/A Dattagalli Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+224 S-75434 State Board School Akshara Pathsala English Darshan Primary (Class 1st-5th) 984582343 N/A Hebbal Mysuru KarnatakaMysuru 570017 Non-User 21536 No KA23 Mysuru
+225 S-75441 State Board School Pragathi Vidya Kendra Bogadhi English Mamatha Primary (Class 1st-5th) 990051354 N/A Bogadhi Mysuru KarnatakaMysuru 570026 Non-User 21536 No KA23 Mysuru
+226 S-75571 State Board School Vidya Varidhi School Bilikere English Sowmya Primary (Class 1st-5th) 984410889 N/A Bilikere Mysuru KarnatakaMysuru 571103 Non-User 21536 No KA23 Mysuru
+227 S-75575 State Board School New Cambridge School Hunsur N/A Rani Primary (Class 1st-5th) 876285607 N/A Hunsur Mysuru KarnatakaMysuru 571105 Non-User 21536 No KA23 Mysuru
+228 S-75604 State Board School Bgs School Hunsur English Kumudha Primary (Class 1st-5th) 907139509 N/A Hunsur Mysuru KarnatakaMysuru 571105 Non-User 21536 No KA23 Mysuru
+229 S-75610 Icse-School Christ School Hunsur English Mathew Pro Primary (Class 1st-5th) 944806974 N/A Hunsur Mysuru KarnatakaMysuru 571105 Non-User 21536 No KA23 Mysuru
+230 S-75699 State Board School Sri Adhichunchanagiri Balajagath School Gungralachatra English Deepa H S Primary (Class 1st-5th) 789276833 N/A Gungralachatra Mysuru KarnatakaMysuru 571130 Non-User 21536 No KA23 Mysuru
+231 S-75722 State Board School Sn Public School K R Nagar English Latha Primary (Class 1st-5th) 948197138 N/A K R Nagar Mysuru KarnatakaMysuru 571602 Non-User 21536 No KA23 Mysuru
+232 S-75752 State Board School Lions School K R Nagar English Lokesh Primary (Class 1st-5th) 916479825 N/A K R Nagar Mysuru KarnatakaMysuru 571602 Non-User 21536 No KA23 Mysuru
+233 S-75753 State Board School Sy Joseph Convent K Nagar English Principal Primary (Class 1st-5th) 0821 N/A K R Nagar Mysuru KarnatakaMysuru 571602 Non-User 21536 No KA23 Mysuru
+234 S-75771 State Board School Kanaka Public School K R Nagar English Pankaja Primary (Class 1st-5th) 879248981 N/A K R Nagar Mysuru KarnatakaMysuru 571602 Non-User 21536 No KA23 Mysuru
+235 S-75786 State Board School Bs Madappa Vidya Samsthe English Principal Primary (Class 1st-5th) 0821 N/A K R Nagar Mysuru KarnatakaMysuru 571602 Non-User 21536 No KA23 Mysuru
+236 S-75809 State Board School St Anthonys School K R Nagar English Principal Primary (Class 1st-5th) 0821 N/A Doddekopalu Mysuru KarnatakaMysuru 571602 Non-User 21536 No KA23 Mysuru
+237 S-75924 State Board School St Annes Public School English Head Primary (Class 1st-5th) 903619517 N/A Palahally Srp Mandya KarnatakaMandya 571606 Non-User 21536 No KA22 Mysuru
+238 S-75936 State Board School Suprabhatha School Srp English Cristina Primary (Class 1st-5th) 903619517 N/A Srirangapatana Mandya KarnatakaMandya 571438 Non-User 21536 No KA22 Mysuru
+239 S-75973 Cbse School Sri Chaitanya Techno School Mandya English Head Primary (Class 1st-5th) 0821 N/A Mandya Mandya KarnatakaMandya 571404 Non-User 21536 No KA22 Mysuru
+240 S-76007 State Board School Cambridge School K M Doddi English Nayana Primary (Class 1st-5th) 636323840 N/A K M Doddi Mandya KarnatakaMandya 571422 Non-User 21536 No KA22 Mysuru
+241 S-76024 Cbse School Bgs Public School Mysore English Usha Primary (Class 1st-5th) 767655555 N/A Mysore Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+242 S-76259 Cbse School Shri Sharada Public School English Principal Primary (Class 1st-5th) 990050852 N/A Dattagalli Mysuru KarnatakaMysuru 570033 Non-User 21536 No KA23 Mysuru
+243 S-76443 Cbse School Cauvery School English Naveen Primary (Class 1st-5th) 998026541 N/A Kuvrmpunagar Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+244 S-76584 State Board School Vishwamanava Vidyanikethana English Rekha Primary (Class 1st-5th) 994589101 N/A Ramakrishna Nagar Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+245 S-76586 State Board School Bgs School Gadige English Principal Primary (Class 1st-5th) 0821 N/A Gaddige Mysuru KarnatakaMysuru 571189 Non-User 21536 No KA23 Mysuru
+246 S-76615 State Board School Taralabalu School English Principal Primary (Class 1st-5th) 08121 N/A T K Layout Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+247 S-76693 State Board School Shanthi High School Kutvadi English Head Primary (Class 1st-5th) 0821 N/A Kutvadi Mysuru KarnatakaMysuru 571189 Non-User 21536 No KA23 Mysuru
+248 S-76709 State Board School Crista Krupa School Ratnapuri English Princi Primary (Class 1st-5th) 0821 N/A Ratnapuri Mysuru KarnatakaMysuru 571189 Non-User 21536 No KA23 Mysuru
+249 S-76797 State Board School Bkt Public School English Kumarswamy Primary (Class 1st-5th) 0821 N/A Kadakola Mysuru KarnatakaMysuru 571311 Non-User 21536 No KA23 Mysuru
+250 S-76798 State Board School Shree Neelakanteshwara School English Manjula Primary (Class 1st-5th) 782985158 N/A Nanjangud Mysuru KarnatakaMysuru 571301 Non-User 21536 No KA23 Mysuru
+251 S-76847 State Board School Unity School Nanjangud English Head Primary (Class 1st-5th) 9811 N/A Nanjangud Mysuru KarnatakaMysuru 571301 Non-User 21536 No KA23 Mysuru
+252 S-76880 State Board School Samudra English Medium School Nanjangud English Principal Primary (Class 1st-5th) 0821 N/A Nanjangud Mysuru KarnatakaMysuru 571129 Non-User 21536 No KA23 Mysuru
+253 S-76920 State Board School Archaya Gurukula School Kalale English Principal Primary (Class 1st-5th) 821 N/A Kalale Mysuru KarnatakaMysuru 571118 Non-User 21536 No KA23 Mysuru
+254 S-77011 Cbse School Sri Adichunchanagiri Central School English Archana Primary (Class 1st-5th) 646450746 N/A Kuvempunagar Mysuru KarnatakaMysuru 570023 User 21536 No KA23 Mysuru
+255 S-77094 Cbse School Saint Philemeno Public School English Principal Primary (Class 1st-5th) 0821 N/A Gayathri Puram Mysuru KarnatakaMysuru 570007 Non-User 21536 No KA23 Mysuru
+256 S-77193 State Board School Bm Madappa School K R Nagar English Principal Primary (Class 1st-5th) 8211 N/A K R Nagar Mysuru KarnatakaMysuru 570010 Non-User 21536 No KA23 Mysuru
+257 S-80185 State Board School Sharada Vilas School English Principal Primary (Class 1st-5th) 0821 N/A Krishna Murthy Nagar Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+258 S-80189 State Board School Rotary West School Dattagalli English Principal Primary (Class 1st-5th) 0821 N/A Dattagalli Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+259 S-80219 State Board School Jagadhama School English Akila Primary (Class 1st-5th) 900885104 N/A Lakshmi Puram Mysuru KarnatakaMysuru 570004 Non-User 21536 No KA23 Mysuru
+260 S-80220 State Board School Avila Convent English Principal Primary (Class 1st-5th) 0821 N/A Chamarajapuram Mysuru KarnatakaMysuru 570004 Non-User 21536 No KA23 Mysuru
+261 S-80310 State Board School St Paul Mission High School Hampapura English Principal Primary (Class 1st-5th) 0821 N/A Hampapura Mysuru KarnatakaMysuru 571125 Non-User 21536 No KA23 Mysuru
+262 S-112609 State Board School Sandal Rose Convent English Principal Primary (Class 1st-5th) 0821 N/A Salundi Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+263 S-112695 State Board School St Marys School H D Kote English Asha Primary (Class 1st-5th) 0821 N/A H D Kote Mysuru KarnatakaMysuru 571114 Non-User 21536 No KA23 Mysuru
+264 S-113447 State Board School Ace Priyadarshini School English Naga Primary (Class 1st-5th) 0822 N/A Hebbal Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+265 S-113475 State Board School Vidyavahini School Hebbal English Principal Primary (Class 1st-5th) 0821 N/A Hebbal Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+266 S-113523 State Board School Sudarshan School English Suresh Other 0821 N/A Hootagalli Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+267 S-113537 State Board School Siri Vidyalaya English Siri Primary (Class 1st-5th) 0821 N/A Hottgalli Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+268 S-113546 State Board School Ramakrishna Vidya Kula Hottagalli English Sunil Primary (Class 1st-5th) 0821 N/A Hottagalli Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+269 S-113747 State Board School Adhichunchanagiri School Bannur English Principal Primary (Class 1st-5th) 0821 N/A Bannur Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+270 S-113769 State Board School Divya Jyothi School English Head Other 0821 N/A Mysore Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+271 S-113842 State Board School Jnana Ganga School Kirugavalu English Head Primary (Class 1st-5th) 0821 N/A Kirugavalu Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+272 S-113864 Cbse School Arya Bhata International School K M Doddi English Principal Primary (Class 1st-5th) 0821 N/A K M Doddi Mandya KarnatakaMandya 571422 Non-User 21536 No KA22 Mysuru
+273 S-113908 Icse-School Gnana Mudra School K M Doddi English Principal Primary (Class 1st-5th) 0821 N/A K M Doddi Mandya KarnatakaMandya 571422 Non-User 21536 No KA22 Mysuru
+274 S-116389 State Board School Bgs Public School Hunsur English Principal Primary (Class 1st-5th) 0821 N/A Hunsur Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+275 S-116461 Cbse School Holy Family Public School Hunsur English Head Primary (Class 1st-5th) 0821 N/A Hunsur Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+276 S-116489 Cbse School St Josephs Cbse School Hunsur English Head Primary (Class 1st-5th) 0821 N/A Hunsur Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+277 S-116525 State Board School Vanitha Sadana School English Vanitha Primary (Class 1st-5th) 0821 N/A Mysore Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+278 S-116705 State Board School Kalabharathi Vidya Samsthe Yelawala English Principal Primary (Class 1st-5th) 0821 N/A Yelawala Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+279 S-116932 Cbse School St Thomas Cbse School English Linto Primary (Class 1st-5th) 0821 N/A Vidyaranyapuram Mysuru KarnatakaMysuru 570011 Non-User 21536 No KA23 Mysuru
+280 S-116933 State Board School D G T M English Medium School English Hm Primary (Class 1st-5th) 0821 N/A Vidyaranyapuram Mysuru KarnatakaMysuru 570022 User 21536 No KA23 Mysuru
+281 S-116987 Cbse School Bss Balodaya School English Head Primary (Class 1st-5th) 0821 N/A Krishna Murthy Puram Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+282 S-117034 State Board School Rotary Mysore School English Head Primary (Class 1st-5th) 0821 N/A Dattagalli Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+283 S-117035 State Board School Future Foundation School English Head Primary (Class 1st-5th) 0821 N/A Somanathanagar Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+284 S-118781 State Board School Rotary West School Saraswati Puram English Head Primary (Class 1st-5th) 0821 N/A Saraswathipuram Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+285 S-118782 State Board School Mahaveer School Brindavan N/A Head Primary (Class 1st-5th) 0821 N/A Brindavan Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+286 S-118845 State Board School Mit Public School N/A Head Primary (Class 1st-5th) 0821 N/A Belavadi Mysuru KarnatakaMysuru 570028 Non-User 21536 Yes KA23 Mysuru
+287 S-118958 State Board School Om Shree Nikethana School English Head Primary (Class 1st-5th) 0821 N/A Srirangapatana Mandya KarnatakaMandya 571438 Non-User 21536 No KA22 Mysuru
+288 S-118963 State Board School Shree Cauvery School Srp English Head Primary (Class 1st-5th) 0821 N/A Srirangapatana Mandya KarnatakaMandya 571438 Non-User 21536 No KA22 Mysuru
+289 S-118965 State Board School Shree Adhichunchanagiri School Spr English Head Primary (Class 1st-5th) 0821 N/A Srirangapatana Mandya KarnatakaMandya 571477 Non-User 21536 No KA22 Mysuru
+290 S-119030 State Board School Rotary School Bannur English Head Primary (Class 1st-5th) 0821 N/A Bannur Mysuru KarnatakaMysuru 571101 Non-User 21536 No KA23 Mysuru
+291 S-119031 State Board School Adarsha School Malavalli English Head Primary (Class 1st-5th) 0821 N/A Malavalli Mandya KarnatakaMandya 571430 Non-User 21536 No KA22 Mysuru
+292 S-119034 State Board School Rotary School Malavalli English Head Primary (Class 1st-5th) 0821 N/A Malavalli Mandya KarnatakaMandya 571430 Non-User 21536 No KA22 Mysuru
+293 S-119231 State Board School Sneha Convent K M Doddi English Head Primary (Class 1st-5th) 0821 N/A K M Doddi Mandya KarnatakaMandya 571422 Non-User 21536 No KA22 Mysuru
+294 S-121263 State Board School New Ide International Boarding School English Head Primary (Class 1st-5th) 0821 N/A Malavalli Mandya KarnatakaMandya 571422 Non-User 21536 No KA22 Mysuru
+295 S-121264 State Board School New Life International Boarding School Malavalli English Head Other 0821 N/A Malavalli Mandya KarnatakaMandya 571422 Non-User 21536 No KA22 Mysuru
+296 S-121372 State Board School Gopalaswamy School English Head Primary (Class 1st-5th) 0821 N/A Krishna Murthy Puram Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+297 S-121583 State Board School Sri Adhichunchanagiri School K R Pete English Head Primary (Class 1st-5th) 0821 N/A K R Pete Mandya KarnatakaMandya 571426 Non-User 21536 No KA22 Mysuru
+298 S-121584 State Board School Archaya Vidya Shala K R Pete English Head Primary (Class 1st-5th) 0821 N/A K R Pete Mandya KarnatakaMandya 571602 User 21536 Yes KA22 Mysuru
+299 S-121585 State Board School Sskc English Medium High School Krpete English Head Primary (Class 1st-5th) 0821 N/A K R Pete Mandya KarnatakaMandya 571602 User 21536 No KA22 Mysuru
+300 S-121586 State Board School Infant Jesus School K R Pete English Head Primary (Class 1st-5th) 0821 N/A K R Pete Mysuru KarnatakaMysuru 571602 Non-User 21536 No KA23 Mysuru
+301 S-122141 State Board School Taraka Vidya Samsthe Handpost English Head Primary (Class 1st-5th) 0821 N/A Handpost Mysuru KarnatakaMysuru 571114 Non-User 21536 No KA23 Mysuru
+302 S-122227 State Board School Niranthara School Sargur English Head Primary (Class 1st-5th) 0821 N/A Sargur Mysuru KarnatakaMysuru 571121 Non-User 21536 No KA23 Mysuru
+303 S-122455 State Board School Gangotri Public School English Head Primary (Class 1st-5th) 0821 N/A Bogadhi Mysuru KarnatakaMysuru 570009 User 21536 No KA23 Mysuru
+304 S-122532 State Board School Sri Adichunchanagiri Higher Primary & High School Gungr English Head Primary (Class 1st-5th) 0721 N/A Gungralchatra Mysuru KarnatakaMysuru 571130 User 21536 No KA23 Mysuru
+305 S-122563 State Board School B S Madappa Smaraka Vidya Samsthe K R Nagar English Head Primary (Class 1st-5th) 0821 N/A K R Nagar Mysuru KarnatakaMysuru 571422 User 21536 No KA23 Mysuru
+306 S-122575 State Board School Bale Vidya Samsthe K R Nagar English Head Primary (Class 1st-5th) 0821 N/A K R Nagar Mysuru KarnatakaMysuru 571602 Non-User 21536 No KA23 Mysuru
+307 S-122578 State Board School Sri Adichunchanagiri Balajagath K R Nagar English Head Primary (Class 1st-5th) 0821 N/A K R Nagar Mysuru KarnatakaMysuru 571602 Non-User 21536 No KA23 Mysuru
+308 S-122868 State Board School Bgs Balajagath Hulikere English Head Primary (Class 1st-5th) 0811 N/A Hulikere Mandya KarnatakaMandya 571606 Non-User 21536 No KA22 Mysuru
+309 S-122960 State Board School Pragathi English School K R Pete English Head Primary (Class 1st-5th) 0821 N/A K R Pete Mandya KarnatakaMandya 571426 Non-User 21536 No KA22 Mysuru
+310 S-122962 State Board School Ashirvad English Medium School K R Pete English Head Primary (Class 1st-5th) 0821 N/A K R Pete Mandya KarnatakaMandya 571426 Non-User 21536 No KA22 Mysuru
+311 S-122963 State Board School Shri Chaya Devi School K R Pete English Head Primary (Class 1st-5th) 0821 N/A K R Pete Mandya KarnatakaMandya 571426 Non-User 21536 No KA22 Mysuru
+312 S-122975 State Board School Cambridge Public School K R Pete English Head Secondary (Class 6th-10) 0821 N/A K R Pete Mandya KarnatakaMandya 571426 Non-User 21536 No KA22 Mysuru
+313 S-123451 State Board School Shree Maddaneshwara Vidya Samsthe English Head Primary (Class 1st-5th) 0821 N/A Gundlupete Chamarajanaga KarnatakaChamarajanaga 571111 Non-User 21536 No KA08 Mysuru
+314 S-123453 State Board School St Johns School Gundlupete N/A Head Primary (Class 1st-5th) 0821 N/A Gundlupete Chamarajanaga KarnatakaChamarajanaga 571111 Non-User 21536 No KA08 Mysuru
+315 S-123583 State Board School Shree Gurumaleshwara School English Head Other 0821 N/A Nanjangud Mysuru KarnatakaMysuru 571301 Non-User 21536 No KA23 Mysuru
+316 S-123739 State Board School Ideal Jawa School English Head Primary (Class 1st-5th) 0821 N/A Mysore Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+317 S-123740 State Board School Sadvidya School English Head Primary (Class 1st-5th) 0821 N/A Mysore Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+318 S-124033 State Board School Sunrise School Malavalli English Head Primary (Class 1st-5th) 0821 N/A Malavalli Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+319 S-124064 State Board School Doreswamy Vidya Kula English Head Primary (Class 1st-5th) 0821 N/A Krs Mysuru KarnatakaMysuru 570022 Non-User 21536 No KA23 Mysuru
+320 S-124330 State Board School Gssss School English Head Primary (Class 1st-5th) 0821 N/A Siddharth Layout Mysuru KarnatakaMysuru 570001 Non-User 21536 No KA23 Mysuru

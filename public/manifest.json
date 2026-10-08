@@ -1,0 +1,17 @@
+{
+  "name": "Mittsure Field Route & School CRM",
+  "short_name": "Mittsure CRM",
+  "description": "Field outreach route optimizer and school CRM for Mittsure Technologies",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#059669",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

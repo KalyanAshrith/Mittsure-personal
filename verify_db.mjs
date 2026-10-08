@@ -1,0 +1,12 @@
+import { PrismaClient } from '@prisma/client';
+const c = new PrismaClient();
+console.log('Checking database state...');
+const schools = await c.school.count();
+const visits = await c.visit.count();
+const routePlans = await c.routePlan.count();
+const dailyPlans = await c.dailyPlan.count();
+console.log(`schools: ${schools}`);
+console.log(`visits: ${visits}`);
+console.log(`routePlans: ${routePlans}`);
+console.log(`dailyPlans: ${dailyPlans}`);
+await c.$disconnect();

@@ -1,0 +1,233 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model School {
+  id                    String        @id @default(cuid())
+  school_id             String        @unique // e.g. S-17802
+  s_no                  Int           @unique // 1 to 487
+  school_name           String
+  school_code           String?       // Olympiad or CRM code
+  board                 String        // CBSE, ICSE, STATE BOARD, OTHER, UNKNOWN
+  medium                String        @default("English")
+  school_type           String        // PRIMARY, HIGH SCHOOL, COMPOSITE, INTERNATIONAL, PRE-SCHOOL, PLAY SCHOOL, NURSERY, MONTESSORI, KINDERGARTEN, OTHER
+  category              String?       // Secondary Level, Senior Secondary Level, Primary
+  address               String
+  area                  String
+  taluk                 String?
+  district              String        // Mysuru, Mandya, Chamarajanagar, Hassan, Kodagu
+  state                 String        @default("Karnataka")
+  pincode               String?
+  latitude              Float
+  longitude             Float
+  google_place_id       String?
+  google_maps_url       String?
+  phone                 String?
+  email                 String?
+  website               String?
+  principal_name        String?
+  contact_person        String?
+  contact_number        String?
+  student_strength      Int?
+  classes_available     String?
+  nursery_available     Boolean       @default(false)
+  lkg_available         Boolean       @default(false)
+  ukg_available         Boolean       @default(false)
+  primary_available     Boolean       @default(true)
+  secondary_available   Boolean       @default(false)
+  status                String        @default("ACTIVE")
+  visit_status          String        @default("NOT VISITED") // NOT VISITED, VISITED, REVISIT REQUIRED, INTERESTED, FOLLOW-UP, REGISTRATION, NOT INTERESTED, CLOSED
+  last_visit_date       DateTime?
+  next_followup_date    DateTime?
+  priority              String        @default("MEDIUM") // HIGH, MEDIUM, LOW
+  opportunity_type      String        @default("C") // A: Premium, B: Medium, C: Small/Local, D: Pre-school, E: Nursery, F: Unknown
+  recommended_programme String        @default("MOM") // MOM, Junior Power Quest, Both, Other, Needs Assessment
+  notes                 String?
+  is_user_school        Boolean       @default(false) // from dataset User School column
+  visited_by_current_user Boolean       @default(false)
+  visited_by_previous_rep Boolean       @default(false)
+  previous_rep_visit_date DateTime?
+  previous_rep_notes      String?
+  created_at            DateTime      @default(now())
+  updated_at            DateTime      @updatedAt
+
+  visits                SchoolVisit[]
+  route_stops           RouteStop[]
+  followups             FollowUp[]
+
+  @@index([school_id])
+  @@index([s_no])
+  @@index([board])
+  @@index([school_type])
+  @@index([visit_status])
+  @@index([visited_by_current_user])
+  @@index([visited_by_previous_rep])
+  @@index([area])
+  @@index([district])
+  @@index([next_followup_date])
+}
+
+model SchoolVisit {
+  id                    String    @id @default(cuid())
+  school_id             String
+  school                School    @relation(fields: [school_id], references: [id], onDelete: Cascade)
+  visit_date            DateTime  @default(now())
+  representative        String
+  representative_id     String?   @default("KA-REP-01")
+  is_current_representative Boolean @default(true)
+  visit_type            String    @default("FIRST_VISIT") // FIRST_VISIT, REVISIT, FOLLOW_UP_VISIT
+  purpose               String    @default("Field Outreach & Programme Introduction")
+  programme_discussed   String    @default("Both") // MOM, Junior Power Quest, Both, Other
+  contact_person        String?
+  contact_number        String?
+  designation           String?   // Principal, Admin, Trustee, Coordinator
+  interest_level        String    @default("Medium") // Very High, High, Medium, Low, Not Interested
+  outcome               String    // Interested, Follow-up Required, Registration Discussion, Registration Confirmed, Principal Not Available, Admin Contacted, Not Interested, School Closed, Call Later
+  notes                 String?
+  latitude              Float?
+  longitude             Float?
+  distance_from_school  Float?    // In meters
+  location_verified     Boolean   @default(false)
+  follow_up_date        DateTime?
+  follow_up_time        String?
+  registration_status   String?
+  photo_url             String?
+  created_at            DateTime  @default(now())
+
+  followups             FollowUp[]
+
+  @@index([school_id])
+  @@index([visit_date])
+  @@index([outcome])
+  @@index([representative_id])
+  @@index([is_current_representative])
+}
+
+model RoutePlan {
+  id                      String      @id @default(cuid())
+  date                    String      // YYYY-MM-DD
+  name                    String?
+  origin                  String
+  origin_lat              Float
+  origin_lng              Float
+  destination             String
+  destination_lat         Float
+  destination_lng         Float
+  travel_mode             String      @default("TWO_WHEELER") // TWO_WHEELER, DRIVE
+  total_distance_meters   Int         @default(0)
+  total_distance_km       Float       @default(0.0)
+  total_duration_seconds  Int         @default(0)
+  total_duration_formatted String     @default("0 min")
+  optimized_order         String      // JSON array of school IDs or stop sequence
+  status                  String      @default("PLANNED") // PLANNED, IN_PROGRESS, COMPLETED
+  remarks                 String?
+  is_locked               Boolean     @default(false)
+  day_type                String      @default("FULL_DAY") // FULL_DAY, HALF_DAY, HOLIDAY
+  created_at              DateTime    @default(now())
+  updated_at              DateTime    @updatedAt
+
+  stops                   RouteStop[]
+
+  @@index([date])
+}
+
+model RouteStop {
+  id                      String     @id @default(cuid())
+  route_plan_id           String
+  route_plan              RoutePlan  @relation(fields: [route_plan_id], references: [id], onDelete: Cascade)
+  school_id               String
+  school                  School     @relation(fields: [school_id], references: [id], onDelete: Cascade)
+  stop_number             Int
+  optimized_sequence      Int
+  leg_distance_meters     Int?
+  leg_distance_km         Float?
+  leg_duration_seconds    Int?
+  leg_duration_formatted  String?
+  status                  String     @default("PENDING") // PENDING, VISITED, SKIPPED
+  notes                   String?
+
+  @@index([route_plan_id])
+  @@index([school_id])
+}
+
+model FollowUp {
+  id              String       @id @default(cuid())
+  school_id       String
+  school          School       @relation(fields: [school_id], references: [id], onDelete: Cascade)
+  visit_id        String?
+  visit           SchoolVisit? @relation(fields: [visit_id], references: [id], onDelete: SetNull)
+  contact_person  String?
+  contact_number  String?
+  due_date        DateTime
+  due_time        String?
+  status          String       @default("Pending") // Pending, Today, Overdue, Completed, Cancelled
+  priority        String       @default("MEDIUM") // HIGH, MEDIUM, LOW
+  notes           String?
+  outcome         String?
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  @@index([school_id])
+  @@index([due_date])
+  @@index([status])
+}
+
+model DailySummary {
+  id                  String    @id @default(cuid())
+  date                String    @unique // YYYY-MM-DD
+  schools_planned     Int       @default(0)
+  schools_visited     Int       @default(0)
+  schools_not_visited Int       @default(0)
+  revisits            Int       @default(0)
+  interested          Int       @default(0)
+  followups           Int       @default(0)
+  registrations       Int       @default(0)
+  not_interested      Int       @default(0)
+  total_distance_km   Float     @default(0.0)
+  total_travel_time   String?
+  remarks             String?   // Rep's daily remarks
+  ai_summary          String?   // AI generated daily analysis and advice
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+
+  @@index([date])
+}
+
+model Settings {
+  id                             String   @id @default("default")
+  current_user_id                String   @default("KA-REP-01")
+  user_name                      String   @default("Nichhenametla Kalyan Ashrith")
+  user_role                      String   @default("Field Representative / School Outreach Representative")
+  company                        String   @default("Mittsure Technologies LLP")
+  base_address                   String   @default("661, Sahukar Chennaiah Road, Janatha Nagar, Bogadi 2nd Stage, TK Layout, Mysuru, Karnataka 570009")
+  base_latitude                  Float    @default(12.3021)
+  base_longitude                 Float    @default(76.6178)
+  working_radius_km              Float    @default(25.0)
+  default_daily_schools          Int      @default(5)
+  preferred_travel_mode          String   @default("TWO_WHEELER")
+  gps_verification_radius_meters Int      @default(150)
+  target_total_schools           Int      @default(487)
+  target_schools_per_week        Int      @default(30)
+  target_progress_goal           Int      @default(300)
+  weekly_holiday                 String   @default("SUNDAY")
+  target_completion_date         String   @default("2026-11-30")
+  mom_pitch                      String?
+  junior_quest_pitch             String?
+  faq_objections                 String?
+  created_at                     DateTime @default(now())
+  updated_at                     DateTime @updatedAt
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  entity     String
+  entity_id  String?
+  details    String?
+  created_at DateTime @default(now())
+}
