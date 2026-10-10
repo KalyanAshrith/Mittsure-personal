@@ -1670,6 +1670,36 @@ describe('Suite 38: Saturday 10 Oct Chamarajanagara Half-Day Circuit Completion'
   });
 });
 
+describe('Suite 39: Friday 9 Oct Mysuru & Hunsur Route Items Completion', () => {
+  const oct9Stops = [
+    { seq: 1, s_no: 60, partyId: 'S-18096', name: 'Dayananda Arya Vidya Public School-Mysuru', isRevisit: false, status: 'VISITED' },
+    { seq: 2, s_no: 321, partyId: 'S-124332', name: 'Shashwatha Seva School', isRevisit: false, status: 'VISITED' },
+    { seq: 3, s_no: 323, partyId: 'S-124346', name: 'Sns School', isRevisit: false, status: 'VISITED' },
+    { seq: 4, s_no: 92, partyId: 'S-18132', name: 'Sree Natraja Public School-Mysuru', isRevisit: true, status: 'VISITED' },
+    { seq: 5, s_no: 404, partyId: 'S-137127', name: 'Sri Ranga Gurukula', isRevisit: true, status: 'VISITED' },
+    { seq: 6, s_no: 276, partyId: 'S-116489', name: 'St Josephs Cbse School Hunsur', isRevisit: false, status: 'VISITED' },
+  ];
+
+  test('Friday 9 Oct route contains exact 6 completed route items (4 new + 2 revisits)', () => {
+    assert.strictEqual(oct9Stops.length, 6);
+    assert.strictEqual(oct9Stops.filter(s => !s.isRevisit).length, 4);
+    assert.strictEqual(oct9Stops.filter(s => s.isRevisit).length, 2);
+    assert.ok(oct9Stops.every(s => s.status === 'VISITED'));
+  });
+
+  test('4 newly visited schools increment unique visited count from 145 to 149 (30.10%)', () => {
+    const previousVisited = 145;
+    const newUnique = oct9Stops.filter(s => !s.isRevisit).length;
+    const updatedVisited = previousVisited + newUnique;
+    const totalAllotment = 495;
+    const rate = Number(((updatedVisited / totalAllotment) * 100).toFixed(2));
+
+    assert.strictEqual(updatedVisited, 149);
+    assert.strictEqual(rate, 30.1);
+  });
+});
+
+
 
 
 
