@@ -1647,6 +1647,30 @@ describe('Suite 37: Area-Based Locality Integrity & Clear Filtering Engine', () 
   });
 });
 
+describe('Suite 38: Saturday 10 Oct Chamarajanagara Half-Day Circuit Completion', () => {
+  const oct10Stops = [
+    { seq: 1, s_no: 2, partyId: 'S-17803', name: 'M.C.S Public School-Chamarajanagara', status: 'VISITED', outcome: 'Interested' },
+    { seq: 2, s_no: 415, partyId: 'S-141383', name: 'Seva Bharathi Nursery School Chamarjanagara', status: 'VISITED', outcome: 'Interested' },
+    { seq: 3, s_no: 409, partyId: 'S-140157', name: 'St Joseph School Chamarajanagara', status: 'VISITED', outcome: 'Interested' },
+    { seq: 4, s_no: 126, partyId: 'S-18484', name: 'St. Francis Icse School-Chamarajanagara', status: 'VISITED', outcome: 'Interested' },
+    { seq: 5, s_no: 495, partyId: 'S-174787', name: 'Universe English school Chamarajanagara', status: 'VISITED', outcome: 'Interested' },
+  ];
+
+  test('Saturday half-day circuit contains exact 5 completed Chamarajanagara schools', () => {
+    assert.strictEqual(oct10Stops.length, 5, 'Saturday half-day route must have 5 stops');
+    assert.ok(oct10Stops.every(s => s.status === 'VISITED'), 'All 5 stops must be marked VISITED');
+  });
+
+  test('Auto-creates newly added CRM school Universe English school Chamarajanagara (S-174787) as #495', () => {
+    const newSchool = oct10Stops.find(s => s.partyId === 'S-174787');
+    assert.ok(newSchool, 'S-174787 must exist in completed stops');
+    assert.strictEqual(newSchool.s_no, 495);
+    assert.strictEqual(newSchool.status, 'VISITED');
+    assert.strictEqual(newSchool.outcome, 'Interested', 'Zero Assumed Registrations policy must be preserved');
+  });
+});
+
+
 
 
 
