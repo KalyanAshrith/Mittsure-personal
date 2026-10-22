@@ -1,0 +1,99 @@
+{
+  "products": [
+    {
+      "code": "LUMA_LEARN",
+      "name": "Luma Learn",
+      "category": "CURRICULUM",
+      "series": "Foundational Early Years",
+      "target_grades": "Nursery, LKG, UKG",
+      "description": "Comprehensive early childhood education program aligned with NCF-FS 2022 and NEP 2020. Features multi-sensory play books, cognitive development kits, phonic readers, and teacher empowerment resources.",
+      "books": [
+        { "title": "Luma Learn Literacy & Phonics", "grade": "Nursery", "subject": "English", "curriculum_claims": "NCF-FS 2022 aligned, play-based literacy foundation" },
+        { "title": "Luma Learn Number Fun & Logic", "grade": "Nursery", "subject": "Mathematics", "curriculum_claims": "Early numeracy & pre-math concepts" },
+        { "title": "Luma Learn World Around Us", "grade": "LKG", "subject": "EVS", "curriculum_claims": "Sensory exploration & environmental awareness" },
+        { "title": "Luma Learn Rhymes & Picture Stories", "grade": "UKG", "subject": "Language Arts", "curriculum_claims": "Storytelling, expressive vocabulary, and motor skill development" }
+      ]
+    },
+    {
+      "code": "THINK_TRAIL",
+      "name": "ThinkTrail",
+      "category": "CURRICULUM",
+      "series": "Primary Inquiry Series",
+      "target_grades": "Grades 1 to 5",
+      "description": "Inquiry-based primary curriculum fostering critical thinking, experiential discovery, and interdisciplinary problem solving. Designed for CBSE and progressive State board institutions.",
+      "books": [
+        { "title": "ThinkTrail English Explorer", "grade": "Grade 1", "subject": "English", "curriculum_claims": "NEP 2020 compliant, communication and grammar application" },
+        { "title": "ThinkTrail Math Quest", "grade": "Grade 2", "subject": "Mathematics", "curriculum_claims": "Concrete-Pictorial-Abstract (CPA) pedagogical framework" },
+        { "title": "ThinkTrail Science Horizons", "grade": "Grade 3", "subject": "Science", "curriculum_claims": "Experiential lab activities and real-life scientific inquiry" },
+        { "title": "ThinkTrail Social Journeys", "grade": "Grade 4", "subject": "Social Studies", "curriculum_claims": "Heritage, civic values, and geographical mapping skills" },
+        { "title": "ThinkTrail Integrated STEM & Logic", "grade": "Grade 5", "subject": "STEM", "curriculum_claims": "Cross-curricular problem solving and computational thinking" }
+      ]
+    },
+    {
+      "code": "B4_SERIES",
+      "name": "B4 Series",
+      "category": "CURRICULUM",
+      "series": "Core Subject Package",
+      "target_grades": "Grades 1 to 8",
+      "description": "Mittsure's flagship 4-core-subject balanced textbook series covering English, Mathematics, Science/EVS, and Social Studies. Highly structured with chapter-end assessments and practice workbooks.",
+      "books": [
+        { "title": "B4 English Reader & Grammar", "grade": "Grade 1", "subject": "English", "curriculum_claims": "Graded reader with systematic phonics and composition exercises" },
+        { "title": "B4 Mathematics Applied", "grade": "Grade 2", "subject": "Mathematics", "curriculum_claims": "Mental math drills, step-by-step problem solving methods" },
+        { "title": "B4 Science Explorations", "grade": "Grade 3", "subject": "Science", "curriculum_claims": "Activity-rich concept builders with hands-on experiments" },
+        { "title": "B4 Social Studies", "grade": "Grade 4", "subject": "Social Studies", "curriculum_claims": "National curriculum aligned with state-specific geography context" }
+      ]
+    },
+    {
+      "code": "B5_PINAKA",
+      "name": "B5 PINAKA",
+      "category": "CURRICULUM",
+      "series": "Premium Comprehensive 5-Subject Bundle",
+      "target_grades": "Grades 1 to 8",
+      "description": "Premium 5-subject curriculum ecosystem encompassing English, Mathematics, Science, Social Studies, and Computer Science / AI Literacy. Bundled with smart digital teacher aids and student app integration.",
+      "books": [
+        { "title": "B5 PINAKA English Spectrum", "grade": "Grade 1", "subject": "English", "curriculum_claims": "Comprehensive language lab integration, creative writing modules" },
+        { "title": "B5 PINAKA Math Marvel", "grade": "Grade 2", "subject": "Mathematics", "curriculum_claims": "Olympiad-style thinking problems and visual mathematical models" },
+        { "title": "B5 PINAKA Science Explorer", "grade": "Grade 3", "subject": "Science", "curriculum_claims": "Interactive STEM models, laboratory guides, and viva questions" },
+        { "title": "B5 PINAKA Social Heritage", "grade": "Grade 4", "subject": "Social Studies", "curriculum_claims": "In-depth history, geography, and constitutional values" },
+        { "title": "B5 PINAKA AI & Cyber Tech", "grade": "Grade 5", "subject": "Computer Science / AI", "curriculum_claims": "NEP 2020 digital literacy, basic algorithmic logic, and safe cyber habits" }
+      ]
+    },
+    {
+      "code": "MOM",
+      "name": "Mittsure Olympiad Masters (MOM)",
+      "category": "OLYMPIAD",
+      "series": "National Competitive Assessment",
+      "target_grades": "Grades 1 to 10",
+      "description": "Nationwide talent search and benchmarking competition. Tests critical reasoning, mathematics, science, and English proficiency with national percentiles, medals, and merit certificates.",
+      "books": [
+        { "title": "MOM Mathematics Practice Workbook", "grade": "Grades 1-5", "subject": "Mathematics", "curriculum_claims": "Higher-Order Thinking Skills (HOTS) competitive problem sets" },
+        { "title": "MOM Science & Reasoning Booster", "grade": "Grades 6-10", "subject": "Science & Logic", "curriculum_claims": "Analytical reasoning, logical aptitude, and speed mastery" }
+      ]
+    },
+    {
+      "code": "JUNIOR_POWER_QUEST",
+      "name": "Junior Power Quest",
+      "category": "OLYMPIAD",
+      "series": "Early Learner Cognitive Showcase",
+      "target_grades": "Pre-school to Grade 2",
+      "description": "Fun, stress-free cognitive and aptitude showcase tailored for early learners. Encourages pattern recognition, perceptual ability, and curiosity with celebratory recognition for all participants.",
+      "books": [
+        { "title": "Junior Power Quest Activity Booklet", "grade": "Kindergarten & Grade 1", "subject": "Cognitive Aptitude", "curriculum_claims": "Visual puzzles, pattern completion, and spatial reasoning" }
+      ]
+    }
+  ],
+  "campaigns": [
+    {
+      "code": "MOM_2026_27",
+      "name": "Mittsure Olympiad Masters (MOM) 2026-27",
+      "programme": "MOM",
+      "academic_year": "2026-2027"
+    },
+    {
+      "code": "JPQ_2026_27",
+      "name": "Junior Power Quest 2026-27",
+      "programme": "JUNIOR_POWER_QUEST",
+      "academic_year": "2026-2027"
+    }
+  ]
+}

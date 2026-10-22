@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { GoogleMapsService } from '@/lib/googleMaps';
 import { SchoolData, TravelMode } from '@/lib/types';
+import { validateRouteSensibility } from '@/lib/geoSegregation';
 
 export const dynamic = 'force-dynamic';
 
@@ -80,6 +81,29 @@ export async function POST(request: NextRequest) {
       },
       schoolsMap
     );
+
+    // Geographic Sensibility & Realism Validation
+    const orderedSchools = optimizationResult.optimizedOrder
+      .map((id) => schoolsMap.get(id))
+      .filter(Boolean) as SchoolData[];
+
+    const sensibility = validateRouteSensibility(
+      orderedSchools.map((s) => ({
+        school_name: s.school_name,
+        latitude: s.latitude,
+        longitude: s.longitude,
+        area: s.area,
+        district: s.district,
+      })),
+      finalOrigin
+    );
+
+    // Realistic Working Hours Calculation: 25 min outreach discussion per school + road travel
+    const estimatedSchoolTimeMinutes = orderedSchools.length * 25;
+    const estimatedTravelMinutes = Math.round(optimizationResult.totalDurationSeconds / 60);
+    const totalDayMinutes = estimatedSchoolTimeMinutes + estimatedTravelMinutes;
+    const totalHoursFormatted = `${Math.floor(totalDayMinutes / 60)}h ${totalDayMinutes % 60}m`;
+    const isExceedingWorkingHours = targetDate.getDay() === 6 ? totalDayMinutes > 270 : totalDayMinutes > 480;
 
     // Determine workday type
     let dayType = 'FULL_DAY';
@@ -205,6 +229,14 @@ export async function POST(request: NextRequest) {
       success: true,
       optimization: optimizationResult,
       savedPlan: savedRoutePlan,
+      sensibility,
+      feasibility: {
+        estimatedSchoolTimeMinutes,
+        estimatedTravelMinutes,
+        totalDayMinutes,
+        totalHoursFormatted,
+        isExceedingWorkingHours,
+      },
     });
   } catch (error: any) {
     console.error('Error in route optimization API:', error);

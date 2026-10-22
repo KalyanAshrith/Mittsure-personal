@@ -343,11 +343,12 @@ export class SchoolRecommendationEngine {
           }
         } else {
           // By default when planning without a specific area, keep within local Mysuru city circuit
-          // so distant subordinate cities (Chamarajanagar ~55km, Mandya ~39km) are not injected
+          // so distant subordinate cities (Chamarajanagar ~55km, Mandya ~39km, Hassan ~115km, Kodagu ~120km) are not injected
           if (maxDistanceKm && distKm > maxDistanceKm) {
             continue;
           }
-          if (school.district === 'Chamarajanagar' || school.district === 'Mandya' || distKm > 20) {
+          const distLower = (school.district || '').toLowerCase();
+          if (['chamarajanagar', 'mandya', 'hassan', 'kodagu'].includes(distLower) || distKm > 20) {
             continue;
           }
         }

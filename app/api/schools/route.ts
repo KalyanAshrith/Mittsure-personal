@@ -13,6 +13,8 @@ export async function GET(request: NextRequest) {
     const schoolType = searchParams.get('schoolType') || 'ALL';
     const area = searchParams.get('area') || 'ALL';
     const district = searchParams.get('district') || 'ALL';
+    const zone = searchParams.get('zone') || 'ALL';
+    const lifecycleStatus = searchParams.get('lifecycleStatus') || 'ALL';
     const visitStatus = searchParams.get('visitStatus') || 'ALL';
     const priority = searchParams.get('priority') || 'ALL';
     const programme = searchParams.get('programme') || 'ALL';
@@ -21,6 +23,14 @@ export async function GET(request: NextRequest) {
     const maxDistance = parseFloat(searchParams.get('maxDistance') || '0');
 
     const where: any = {};
+
+    if (zone !== 'ALL') {
+      where.zone_type = zone;
+    }
+
+    if (lifecycleStatus !== 'ALL') {
+      where.lifecycle_status = lifecycleStatus;
+    }
 
     // Search term matching school_name, s_no, school_id, area, phone, principal_name
     if (search) {
@@ -108,6 +118,12 @@ export async function GET(request: NextRequest) {
         visits: {
           orderBy: { visit_date: 'desc' },
         },
+        product_discussions: {
+          include: { product: true },
+        },
+        olympiad_records: {
+          include: { campaign: true },
+        },
       },
     });
 
@@ -133,10 +149,18 @@ export async function GET(request: NextRequest) {
       orderBy: { area: 'asc' },
     });
 
+    // Get distinct districts for filter dropdown
+    const distinctDistricts = await prisma.school.findMany({
+      select: { district: true },
+      distinct: ['district'],
+      orderBy: { district: 'asc' },
+    });
+
     return NextResponse.json({
       schools: filteredSchools,
       totalCount: filteredSchools.length,
       areas: distinctAreas.map((a) => a.area),
+      districts: distinctDistricts.map((d) => d.district),
     });
   } catch (error: any) {
     console.error('Error fetching schools:', error);

@@ -53,12 +53,19 @@ model School {
   visited_by_previous_rep Boolean       @default(false)
   previous_rep_visit_date DateTime?
   previous_rep_notes      String?
+  is_city_school        Boolean       @default(true)
+  zone_type             String        @default("MYSURU_URBAN") // MYSURU_URBAN, MYSURU_RURAL, OUTSTATION
+  is_location_verified  Boolean       @default(true)
+  lifecycle_status      String        @default("PENDING") // PENDING, VISITED, FOLLOW_UP, PRIORITY, EXCLUDED
+  exclusion_reason      String?
   created_at            DateTime      @default(now())
   updated_at            DateTime      @updatedAt
 
   visits                SchoolVisit[]
   route_stops           RouteStop[]
   followups             FollowUp[]
+  product_discussions   SchoolProductDiscussion[]
+  olympiad_records      OlympiadSchoolRecord[]
 
   @@index([school_id])
   @@index([s_no])
@@ -230,4 +237,95 @@ model AuditLog {
   entity_id  String?
   details    String?
   created_at DateTime @default(now())
+}
+
+model Product {
+  id            String                    @id @default(cuid())
+  code          String                    @unique // LUMA_LEARN, THINK_TRAIL, B4_SERIES, B5_PINAKA, MOM, JUNIOR_POWER_QUEST
+  name          String
+  category      String                    // CURRICULUM, OLYMPIAD, SUPPLEMENTARY, DIGITAL
+  series        String?
+  target_grades String                    // e.g. "Nursery - Grade 5"
+  description   String
+  is_active     Boolean                   @default(true)
+  created_at    DateTime                  @default(now())
+
+  books         BookItem[]
+  discussions   SchoolProductDiscussion[]
+
+  @@index([code])
+  @@index([category])
+}
+
+model BookItem {
+  id                String   @id @default(cuid())
+  product_id        String
+  product           Product  @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  title             String
+  grade             String
+  subject           String
+  isbn              String?
+  mrp               Float?
+  net_price         Float?
+  edition           String?
+  curriculum_claims String?  // NEP 2020 / NCF 2023 verified notes
+  created_at        DateTime @default(now())
+
+  @@index([product_id])
+  @@index([grade])
+  @@index([subject])
+}
+
+model SchoolProductDiscussion {
+  id             String       @id @default(cuid())
+  school_id      String
+  school         School       @relation(fields: [school_id], references: [id], onDelete: Cascade)
+  product_id     String
+  product        Product      @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  visit_id       String?
+  interest_level String       @default("Interested") // High, Medium, Low, Sample Given, Adopted, Interested
+  sample_given   Boolean      @default(false)
+  sample_details String?
+  notes          String?
+  created_at     DateTime     @default(now())
+
+  @@index([school_id])
+  @@index([product_id])
+  @@index([visit_id])
+}
+
+model OlympiadCampaign {
+  id                    String                 @id @default(cuid())
+  code                  String                 @unique // e.g. MOM_2026, JPQ_2026
+  name                  String                 // Mittsure Olympiad Masters 2026-27
+  programme             String                 // MOM, JUNIOR_POWER_QUEST
+  academic_year         String                 @default("2026-2027")
+  exam_date             DateTime?
+  registration_deadline DateTime?
+  created_at            DateTime               @default(now())
+
+  records               OlympiadSchoolRecord[]
+
+  @@index([code])
+  @@index([programme])
+}
+
+model OlympiadSchoolRecord {
+  id                  String           @id @default(cuid())
+  campaign_id         String
+  campaign            OlympiadCampaign @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
+  school_id           String
+  school              School           @relation(fields: [school_id], references: [id], onDelete: Cascade)
+  status              String           @default("INTRODUCED") // INTRODUCED, PROPOSAL_SENT, REGISTERED, EXAM_CONDUCTED
+  expected_students   Int?
+  registered_students Int?
+  coordinator_name    String?
+  coordinator_phone   String?
+  notes               String?
+  updated_at          DateTime         @updatedAt
+  created_at          DateTime         @default(now())
+
+  @@index([campaign_id])
+  @@index([school_id])
+  @@index([status])
 }

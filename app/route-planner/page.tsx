@@ -158,12 +158,39 @@ export default function RoutePlannerPage() {
   });
   const [visitFilter, setVisitFilter] = useState('NOT_VISITED');
   const [travelMode, setTravelMode] = useState<TravelMode>('TWO_WHEELER');
+  const [districtFilter, setDistrictFilter] = useState('ALL');
+  const [zoneFilter, setZoneFilter] = useState('ALL');
+  const [isRoundTrip, setIsRoundTrip] = useState(true);
+  const [originPreset, setOriginPreset] = useState<'BOGADI_PG' | 'SUBURBAN' | 'PALACE' | 'CUSTOM'>('BOGADI_PG');
+  const [destinationAddress, setDestinationAddress] = useState(
+    '661, Sahukar Chennaiah Road, Janatha Nagar, Bogadi 2nd Stage, TK Layout, Mysuru 570009'
+  );
+  const [destinationLat, setDestinationLat] = useState(12.3021);
+  const [destinationLng, setDestinationLng] = useState(76.6178);
+  const [routeSensibility, setRouteSensibility] = useState<{
+    sensible: boolean;
+    warnings: string[];
+    maxLegDistanceKm: number;
+  } | null>(null);
+  const [routeFeasibility, setRouteFeasibility] = useState<{
+    estimatedSchoolTimeMinutes: number;
+    estimatedTravelMinutes: number;
+    totalDayMinutes: number;
+    totalHoursFormatted: string;
+    isExceedingWorkingHours: boolean;
+  } | null>(null);
+
   const [areas, setAreas] = useState<string[]>([]);
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
   // Available areas sorted alphabetically with counts
   const availableAreas = useMemo(() => {
     return Array.from(new Set(allSchools.map((s) => s.area))).filter(Boolean).sort();
+  }, [allSchools]);
+
+  // Available districts sorted
+  const availableDistricts = useMemo(() => {
+    return Array.from(new Set(allSchools.map((s) => s.district))).filter(Boolean).sort();
   }, [allSchools]);
 
   const areaCounts = useMemo(() => {
@@ -180,6 +207,41 @@ export default function RoutePlannerPage() {
   );
   const [baseLat, setBaseLat] = useState(12.3021);
   const [baseLng, setBaseLng] = useState(76.6178);
+
+  const handleOriginPresetChange = (presetKey: 'BOGADI_PG' | 'SUBURBAN' | 'PALACE' | 'CUSTOM') => {
+    setOriginPreset(presetKey);
+    if (presetKey === 'BOGADI_PG') {
+      const addr = '661, Sahukar Chennaiah Road, Janatha Nagar, Bogadi 2nd Stage, TK Layout, Mysuru 570009';
+      setBaseAddress(addr);
+      setBaseLat(12.3021);
+      setBaseLng(76.6178);
+      if (isRoundTrip) {
+        setDestinationAddress(addr);
+        setDestinationLat(12.3021);
+        setDestinationLng(76.6178);
+      }
+    } else if (presetKey === 'SUBURBAN') {
+      const addr = 'Suburban Bus Stand, B.N. Road, Mysuru, Karnataka 570001';
+      setBaseAddress(addr);
+      setBaseLat(12.3075);
+      setBaseLng(76.6578);
+      if (isRoundTrip) {
+        setDestinationAddress(addr);
+        setDestinationLat(12.3075);
+        setDestinationLng(76.6578);
+      }
+    } else if (presetKey === 'PALACE') {
+      const addr = 'Mysore Palace Gate, Sayyaji Rao Road, Mysuru 570001';
+      setBaseAddress(addr);
+      setBaseLat(12.3051);
+      setBaseLng(76.6552);
+      if (isRoundTrip) {
+        setDestinationAddress(addr);
+        setDestinationLat(12.3051);
+        setDestinationLng(76.6552);
+      }
+    }
+  };
 
   // Modal for logging visit
   const [selectedSchoolForVisit, setSelectedSchoolForVisit] = useState<SchoolData | null>(null);
@@ -399,8 +461,13 @@ export default function RoutePlannerPage() {
   useEffect(() => {
     if (allSchools.length === 0) return;
 
+    let pool = allSchools;
+    if (zoneFilter !== 'ALL') {
+      pool = pool.filter((s) => s.zone_type === zoneFilter);
+    }
+
     const quotaResult = SchoolRecommendationEngine.recommendQuotaSchools(
-      allSchools,
+      pool,
       {
         baseLat,
         baseLng,
@@ -408,6 +475,7 @@ export default function RoutePlannerPage() {
         board: boardFilter,
         schoolType: typeFilter,
         area: areaFilter,
+        district: districtFilter !== 'ALL' ? districtFilter : undefined,
         visitStatus: visitFilter,
         preset,
         isSaturday,
@@ -428,6 +496,8 @@ export default function RoutePlannerPage() {
     boardFilter,
     typeFilter,
     areaFilter,
+    districtFilter,
+    zoneFilter,
     visitFilter,
     preset,
   ]);
@@ -615,12 +685,16 @@ export default function RoutePlannerPage() {
     setOptimizationError('');
 
     try {
+      const finalDest = isRoundTrip
+        ? { address: baseAddress, lat: baseLat, lng: baseLng }
+        : { address: destinationAddress, lat: destinationLat, lng: destinationLng };
+
       const res = await fetch('/api/routes/optimize', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           origin: { address: baseAddress, lat: baseLat, lng: baseLng },
-          destination: { address: baseAddress, lat: baseLat, lng: baseLng },
+          destination: finalDest,
           intermediateSchoolIds: selectedSchoolIds, // Strictly selected schools only
           travelMode,
           date,
@@ -636,6 +710,12 @@ export default function RoutePlannerPage() {
       }
 
       setOptimizationResult(json.optimization);
+      if (json.sensibility) {
+        setRouteSensibility(json.sensibility);
+      }
+      if (json.feasibility) {
+        setRouteFeasibility(json.feasibility);
+      }
       if (saveDirectly) {
         setHasExistingPlan(true);
         setPlanSavedMessage(`Route plan successfully saved to your calendar for ${date}!`);
@@ -1088,21 +1168,36 @@ export default function RoutePlannerPage() {
       {!isSunday && (
         <div className="glass-panel rounded-3xl p-5 shadow-sm space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-            {/* Base Location */}
-            <div>
-              <label className="block font-bold text-[#59627E] uppercase tracking-wider text-[11px] mb-1.5">
-                Base Origin & Return
-              </label>
-              <div className="p-2.5 rounded-2xl glass-card flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <span className="font-extrabold text-[#020C21] block line-clamp-1">
-                    Bogadi 2nd Stage PG
-                  </span>
-                  <span className="text-[11px] text-[#59627E] font-medium block line-clamp-1">
-                    {baseAddress}
-                  </span>
-                </div>
+            {/* Base Origin & Starting Point */}
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="block font-bold text-[#59627E] uppercase tracking-wider text-[11px]">
+                  Starting Point & Origin
+                </label>
+                <label className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-800 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={isRoundTrip}
+                    onChange={(e) => setIsRoundTrip(e.target.checked)}
+                    className="rounded text-emerald-600 focus:ring-emerald-500"
+                  />
+                  <span>Round-Trip</span>
+                </label>
+              </div>
+
+              <select
+                value={originPreset}
+                onChange={(e) => handleOriginPresetChange(e.target.value as any)}
+                className="w-full border border-[#DDE4EE] bg-white rounded-xl px-2.5 py-1.5 font-bold text-xs text-[#020C21] focus:ring-2 focus:ring-[#0F1B31] shadow-xs"
+              >
+                <option value="BOGADI_PG">📍 Bogadi 2nd Stage PG (Default Base)</option>
+                <option value="SUBURBAN">🚌 Mysuru Suburban Bus Stand</option>
+                <option value="PALACE">🏰 Mysore Palace / Central Gate</option>
+                <option value="CUSTOM">✏️ Custom Start Location</option>
+              </select>
+
+              <div className="text-[10px] text-[#59627E] font-medium truncate bg-slate-50 p-1.5 rounded-lg border border-slate-200/60">
+                {baseAddress}
               </div>
             </div>
 
@@ -1214,12 +1309,36 @@ export default function RoutePlannerPage() {
             </div>
           </div>
 
-          {/* Filter Row with AREA, CURRICULUM, CATEGORY, STATUS */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs pt-1">
+          {/* Filter Row with DISTRICT, ZONE, AREA, CURRICULUM, CATEGORY, STATUS */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 text-xs pt-1">
+            <select
+              value={districtFilter}
+              onChange={(e) => setDistrictFilter(e.target.value)}
+              className="border border-[#0F1B31] bg-white font-black text-[#0F182F] rounded-xl p-2 shadow-xs transition hover:border-indigo-600 focus:ring-2 focus:ring-indigo-500"
+            >
+              <option value="ALL">🏛️ District: All Districts</option>
+              {availableDistricts.map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={zoneFilter}
+              onChange={(e) => setZoneFilter(e.target.value)}
+              className="border border-[#DDE4EE] bg-white rounded-xl p-2 font-bold text-[#0F182F] shadow-xs"
+            >
+              <option value="ALL">🌐 Zone: All Zones</option>
+              <option value="MYSURU_URBAN">Mysuru Urban Core (≤18km)</option>
+              <option value="MYSURU_RURAL">Mysuru Rural Taluks</option>
+              <option value="OUTSTATION">Outstation Districts</option>
+            </select>
+
             <select
               value={areaFilter}
               onChange={(e) => setAreaFilter(e.target.value)}
-              className="border border-[#0F1B31] bg-white font-black text-[#0F182F] rounded-xl p-2 shadow-xs transition hover:border-emerald-600 focus:ring-2 focus:ring-emerald-500"
+              className="border border-[#DDE4EE] bg-white font-bold text-[#0F182F] rounded-xl p-2 shadow-xs transition hover:border-emerald-600 focus:ring-2 focus:ring-emerald-500"
             >
               <option value="ALL">📍 Area: All Areas ({allSchools.length})</option>
               {availableAreas.map((a) => (
@@ -1234,7 +1353,7 @@ export default function RoutePlannerPage() {
               onChange={(e) => setBoardFilter(e.target.value)}
               className="border border-[#DDE4EE] bg-white/80 rounded-xl p-2 font-semibold text-[#0F182F] shadow-xs"
             >
-              <option value="ALL">Curriculum Board: All</option>
+              <option value="ALL">Board: All</option>
               <option value="STATE BOARD">State Board</option>
               <option value="CBSE">CBSE</option>
               <option value="ICSE">ICSE</option>
@@ -1247,11 +1366,11 @@ export default function RoutePlannerPage() {
             >
               <option value="ALL">Category: All</option>
               <option value="SMALL_AND_EARLY_YEARS">
-                ★ Small & Early Years (Pre-school, Nursery, Small)
+                ★ Small & Early Years
               </option>
-              <option value="PRE-SCHOOL">Pre-School / Play-School Only</option>
+              <option value="PRE-SCHOOL">Pre-School Only</option>
               <option value="PRIMARY">Primary School</option>
-              <option value="COMPOSITE">Composite / High School</option>
+              <option value="COMPOSITE">Composite School</option>
             </select>
 
             <select
@@ -1259,12 +1378,54 @@ export default function RoutePlannerPage() {
               onChange={(e) => setVisitFilter(e.target.value)}
               className="border border-[#DDE4EE] bg-white/80 rounded-xl p-2 font-semibold text-[#0F182F] shadow-xs"
             >
-              <option value="NOT_VISITED">Not Personally Visited (465)</option>
-              <option value="ALL">All 487 Schools (Allow Revisits)</option>
-              <option value="REVISIT_ONLY">Revisit Targets Only</option>
-              <option value="FOLLOW_UP_ONLY">Follow-up Urgency Only</option>
+              <option value="NOT_VISITED">Unvisited Only (Red)</option>
+              <option value="ALL">All Statuses</option>
+              <option value="REVISIT_ONLY">Revisits Only</option>
+              <option value="FOLLOW_UP_ONLY">Follow-ups Only</option>
             </select>
           </div>
+        </div>
+      )}
+
+      {/* ROUTE SENSIBILITY & FEASIBILITY BANNER */}
+      {!isSunday && routeSensibility && (
+        <div className="space-y-2">
+          {!routeSensibility.sensible && routeSensibility.warnings.length > 0 && (
+            <div className="p-4 bg-amber-50 border-2 border-amber-300 rounded-2xl text-amber-950 text-xs space-y-1 shadow-sm">
+              <div className="flex items-center gap-2 font-black">
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
+                <span>Geographic Route Sensibility Notice:</span>
+              </div>
+              <ul className="list-disc pl-5 space-y-0.5 text-amber-900 font-medium">
+                {routeSensibility.warnings.map((w, idx) => (
+                  <li key={idx}>{w}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {routeFeasibility && (
+            <div className="p-3 bg-indigo-50/70 border border-indigo-200/80 rounded-2xl text-indigo-950 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2 shadow-xs">
+              <div className="flex items-center gap-2 font-bold">
+                <Clock className="w-4 h-4 text-indigo-600" />
+                <span>Estimated Schedule: {routeFeasibility.totalHoursFormatted}</span>
+                <span className="text-slate-500 font-normal">
+                  ({routeFeasibility.estimatedTravelMinutes}m travel + {routeFeasibility.estimatedSchoolTimeMinutes}m school meetings)
+                </span>
+              </div>
+              <span
+                className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${
+                  routeFeasibility.isExceedingWorkingHours
+                    ? 'bg-amber-200 text-amber-900'
+                    : 'bg-emerald-100 text-emerald-800'
+                }`}
+              >
+                {routeFeasibility.isExceedingWorkingHours
+                  ? '⚠️ Exceeds Working Hours'
+                  : '✓ Manageable Workload'}
+              </span>
+            </div>
+          )}
         </div>
       )}
 

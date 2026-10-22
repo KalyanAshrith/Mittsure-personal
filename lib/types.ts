@@ -74,9 +74,16 @@ export interface SchoolData {
   visited_by_previous_rep: boolean;
   previous_rep_visit_date?: string | Date | null;
   previous_rep_notes?: string | null;
+  is_city_school?: boolean;
+  zone_type?: 'MYSURU_URBAN' | 'MYSURU_RURAL' | 'OUTSTATION' | string;
+  is_location_verified?: boolean;
+  lifecycle_status?: 'PENDING' | 'VISITED' | 'FOLLOW_UP' | 'PRIORITY' | 'EXCLUDED' | string;
+  exclusion_reason?: string | null;
   created_at?: string | Date;
   updated_at?: string | Date;
   visits?: SchoolVisitData[];
+  product_discussions?: SchoolProductDiscussionData[];
+  olympiad_records?: OlympiadSchoolRecordData[];
   distance_from_base_km?: number;
 }
 
@@ -240,4 +247,71 @@ export interface RouteOptimizationResult {
   isFallbackDrive?: boolean;
   isSimulated?: boolean;
   googleMapsDirectionsUrl: string;
+}
+
+export interface BookItemData {
+  id: string;
+  product_id: string;
+  title: string;
+  grade: string;
+  subject: string;
+  isbn?: string | null;
+  mrp?: number | null;
+  net_price?: number | null;
+  edition?: string | null;
+  curriculum_claims?: string | null;
+  created_at?: string | Date;
+}
+
+export interface ProductData {
+  id: string;
+  code: string;
+  name: string;
+  category: 'CURRICULUM' | 'OLYMPIAD' | 'SUPPLEMENTARY' | 'DIGITAL' | string;
+  series?: string | null;
+  target_grades: string;
+  description: string;
+  is_active: boolean;
+  books?: BookItemData[];
+  created_at?: string | Date;
+}
+
+export interface SchoolProductDiscussionData {
+  id: string;
+  school_id: string;
+  product_id: string;
+  product?: ProductData;
+  visit_id?: string | null;
+  interest_level: string;
+  sample_given: boolean;
+  sample_details?: string | null;
+  notes?: string | null;
+  created_at?: string | Date;
+}
+
+export interface OlympiadCampaignData {
+  id: string;
+  code: string;
+  name: string;
+  programme: 'MOM' | 'JUNIOR_POWER_QUEST' | string;
+  academic_year: string;
+  exam_date?: string | Date | null;
+  registration_deadline?: string | Date | null;
+  created_at?: string | Date;
+}
+
+export interface OlympiadSchoolRecordData {
+  id: string;
+  campaign_id: string;
+  campaign?: OlympiadCampaignData;
+  school_id: string;
+  school?: SchoolData;
+  status: 'INTRODUCED' | 'PROPOSAL_SENT' | 'REGISTERED' | 'EXAM_CONDUCTED' | string;
+  expected_students?: number | null;
+  registered_students?: number | null;
+  coordinator_name?: string | null;
+  coordinator_phone?: string | null;
+  notes?: string | null;
+  updated_at?: string | Date;
+  created_at?: string | Date;
 }

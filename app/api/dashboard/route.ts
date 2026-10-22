@@ -210,6 +210,59 @@ export async function GET() {
       },
     });
 
+    // Territory and Zone Breakdown
+    const districtStats = await prisma.school.groupBy({
+      by: ['district'],
+      _count: { id: true },
+      orderBy: { district: 'asc' },
+    });
+
+    const zoneStats = await prisma.school.groupBy({
+      by: ['zone_type'],
+      _count: { id: true },
+      orderBy: { zone_type: 'asc' },
+    });
+
+    // Olympiad Campaign Metrics
+    const totalOlympiadRegisteredStudents = await prisma.olympiadSchoolRecord.aggregate({
+      _sum: { registered_students: true, expected_students: true },
+    });
+    const olympiadCampaignsCount = await prisma.olympiadCampaign.count();
+    const olympiadRegisteredSchoolsCount = await prisma.olympiadSchoolRecord.count({
+      where: { status: 'REGISTERED' },
+    });
+
+    // Enriched Today Stops with Recommended Product Pitch
+    const enrichedTodayStops = (todayRoute?.stops || []).map((stop: any) => {
+      const s = stop.school;
+      let pitch = 'MOM — Mittsure Olympiad Masters';
+      if (s) {
+        const isEarly =
+          ['PRE-SCHOOL', 'PLAY SCHOOL', 'NURSERY', 'MONTESSORI', 'KINDERGARTEN'].includes(
+            s.school_type?.toUpperCase()
+          ) || s.nursery_available;
+        const isPrimary = s.school_type?.toUpperCase() === 'PRIMARY';
+        if (isEarly) pitch = 'Luma Learn & Junior Power Quest';
+        else if (isPrimary) pitch = 'ThinkTrail Curriculum & MOM Olympiad';
+        else pitch = 'B4 / B5 PINAKA Series & MOM Olympiad';
+      }
+      return {
+        ...stop,
+        recommendedPitch: pitch,
+      };
+    });
+
+    const pendingTodayStops = enrichedTodayStops.filter((st: any) => st.status === 'PENDING');
+    let nextActionText = 'Plan today route with 7 schools quota (5 State/Pre + 2 CBSE/ICSE)';
+    if (isSundayToday) {
+      nextActionText = 'Sunday Weekly Holiday — No outreach scheduled. Plan Monday circuit.';
+    } else if (todayRoute && pendingTodayStops.length > 0) {
+      const nextStop = pendingTodayStops[0];
+      nextActionText = `Next Stop #${nextStop.optimized_sequence}: ${nextStop.school?.school_name} in ${nextStop.school?.area} (Pitch: ${nextStop.recommendedPitch})`;
+    } else if (todayRoute && pendingTodayStops.length === 0 && todayRoute.stops.length > 0) {
+      nextActionText = 'All today stops completed! Perform Evening Wrap-Up batch completion or review tomorrow.';
+    }
+
     return NextResponse.json({
       kpis: {
         totalAssigned,
@@ -263,6 +316,28 @@ export async function GET() {
       })),
       recentVisits,
       upcomingFollowups,
+      territoryBreakdown: {
+        districts: districtStats.map((d) => ({ name: d.district, count: d._count.id })),
+        zones: zoneStats.map((z) => ({ name: z.zone_type, count: z._count.id })),
+      },
+      olympiadSummary: {
+        campaignsCount: olympiadCampaignsCount,
+        registeredSchoolsCount: olympiadRegisteredSchoolsCount,
+        registeredStudents: totalOlympiadRegisteredStudents._sum.registered_students || 0,
+        expectedStudents: totalOlympiadRegisteredStudents._sum.expected_students || 0,
+      },
+      todayActionGuide: {
+        primaryTarget: isSundayToday
+          ? 'Sunday Weekly Holiday — No school outreach scheduled'
+          : todayRoute
+          ? `Complete ${todayRoute.stops.length} scheduled outreach stops in ${todayRoute.name || 'today circuit'}`
+          : 'Plan today route with 7 schools quota (5 State/Pre + 2 CBSE/ICSE)',
+        startLocation: todayRoute?.origin || settings?.base_address,
+        endLocation: todayRoute?.destination || settings?.base_address,
+        isRoundTrip: true,
+        stops: enrichedTodayStops,
+        nextAction: nextActionText,
+      },
     });
   } catch (error: any) {
     console.error('Error fetching dashboard metrics:', error);

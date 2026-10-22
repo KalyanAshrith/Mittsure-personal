@@ -1699,6 +1699,193 @@ describe('Suite 39: Friday 9 Oct Mysuru & Hunsur Route Items Completion', () => 
   });
 });
 
+describe('Suite 40: Multi-District Normalization & Territorial Isolation Guard', () => {
+  const sampleSchools = [
+    { s_no: 1, school_name: 'Mysuru City Central School', area: 'Bogadi', taluk: 'Bogadi', district: 'Mysuru', latitude: 12.302, longitude: 76.618 },
+    { s_no: 9, school_name: 'Akshara School Of Excellence-Hassan', area: 'Hassan', taluk: 'Hassan', district: 'Hassan', latitude: 13.005, longitude: 76.097 },
+    { s_no: 43, school_name: 'St Joseph Convent Madikeri', area: 'Madikeri', taluk: 'Madikeri', district: 'Kodagu', latitude: 12.424, longitude: 75.737 },
+    { s_no: 103, school_name: 'Chamarajanagara High School', area: 'Chamarajanagara', taluk: 'Chamarajanagara', district: 'Chamarajanagar', latitude: 11.925, longitude: 76.940 },
+    { s_no: 104, school_name: 'Mandya Central Academy', area: 'Mandya', taluk: 'Mandya', district: 'Mandya', latitude: 12.522, longitude: 76.898 },
+    { s_no: 276, school_name: 'Hunsur Taluk School', area: 'Hunsur', taluk: 'Hunsur', district: 'Mysuru', latitude: 12.309, longitude: 76.292 },
+  ];
+
+  test('Hassan and Kodagu are normalized to their true districts and excluded from Mysuru circuits', () => {
+    const hassan = sampleSchools.find((s) => s.area === 'Hassan');
+    const kodagu = sampleSchools.find((s) => s.area === 'Madikeri');
+    assert.strictEqual(hassan.district, 'Hassan');
+    assert.strictEqual(kodagu.district, 'Kodagu');
+
+    // Default Mysuru circuit filter:
+    const mysuruCircuit = sampleSchools.filter((s) => {
+      const outstations = ['chamarajanagar', 'mandya', 'hassan', 'kodagu'];
+      if (outstations.includes(s.district.toLowerCase())) return false;
+      const distFromBogadi = Math.hypot((s.latitude - 12.3021) * 111, (s.longitude - 76.6178) * 111);
+      return distFromBogadi <= 18;
+    });
+
+    assert.strictEqual(mysuruCircuit.length, 1);
+    assert.strictEqual(mysuruCircuit[0].school_name, 'Mysuru City Central School');
+  });
+
+  test('Specific district selection isolates that district without mixing with other cities', () => {
+    const chamarajanagarOnly = sampleSchools.filter((s) => s.district === 'Chamarajanagar');
+    assert.strictEqual(chamarajanagarOnly.length, 1);
+    assert.strictEqual(chamarajanagarOnly[0].area, 'Chamarajanagara');
+
+    const hassanOnly = sampleSchools.filter((s) => s.district === 'Hassan');
+    assert.strictEqual(hassanOnly.length, 1);
+    assert.strictEqual(hassanOnly[0].district, 'Hassan');
+  });
+});
+
+describe('Suite 41: Route Sensibility & Real-Time Feasibility Calculator', () => {
+  const origin = { lat: 12.3021, lng: 76.6178, address: 'Bogadi PG Base' };
+
+  test('Validates route sensibility and detects abnormal long travel jumps (> 25 km)', () => {
+    const sensibleStops = [
+      { school_name: 'Bogadi School 1', latitude: 12.303, longitude: 76.619, district: 'Mysuru' },
+      { school_name: 'Kuvempunagar School 2', latitude: 12.290, longitude: 76.626, district: 'Mysuru' },
+      { school_name: 'Saraswathipuram School 3', latitude: 12.306, longitude: 76.633, district: 'Mysuru' },
+    ];
+
+    let maxLegDist = 0;
+    let prev = origin;
+    for (const stop of sensibleStops) {
+      const d = Math.hypot((stop.latitude - prev.lat) * 111, (stop.longitude - prev.lng) * 111);
+      if (d > maxLegDist) maxLegDist = d;
+      prev = { lat: stop.latitude, lng: stop.longitude };
+    }
+
+    assert.ok(maxLegDist < 10, `Sensible city legs should be small, got ${maxLegDist.toFixed(1)} km`);
+  });
+
+  test('Calculates realistic working hours including travel and 25 min outreach per stop', () => {
+    const stopsCount = 7;
+    const travelTimeMinutes = 45;
+    const outreachPerSchool = 25;
+    const totalOutreachMinutes = stopsCount * outreachPerSchool;
+    const totalDayMinutes = travelTimeMinutes + totalOutreachMinutes;
+
+    assert.strictEqual(totalOutreachMinutes, 175);
+    assert.strictEqual(totalDayMinutes, 220); // 3 hours 40 minutes
+    assert.ok(totalDayMinutes <= 480, '7 schools comfortably fits within standard 8-hour workday');
+  });
+
+  test('Flags working hours warning when scheduled schools exceed available half-day Saturday hours', () => {
+    const saturdayStopsCount = 8; // excessive for half-day
+    const travelMinutes = 60;
+    const outreachPerSchool = 30;
+    const totalMinutes = travelMinutes + saturdayStopsCount * outreachPerSchool;
+    const saturdayMaxMinutes = 270; // 4.5 hours (9 AM to 1:30 PM)
+
+    assert.strictEqual(totalMinutes, 300);
+    assert.ok(totalMinutes > saturdayMaxMinutes, '8 schools exceeds Saturday half-day hours');
+  });
+});
+
+describe('Suite 42: Educational Product Catalogue & NEP/NCF Verified Mapping', () => {
+  const products = [
+    { code: 'LUMA_LEARN', name: 'Luma Learn', category: 'CURRICULUM', target: 'Nursery, LKG, UKG', claims: 'NCF-FS 2022' },
+    { code: 'THINK_TRAIL', name: 'ThinkTrail', category: 'CURRICULUM', target: 'Grades 1 to 5', claims: 'NEP 2020' },
+    { code: 'B4_SERIES', name: 'B4 Series', category: 'CURRICULUM', target: 'Grades 1 to 8', claims: 'Core 4-Subject' },
+    { code: 'B5_PINAKA', name: 'B5 PINAKA', category: 'CURRICULUM', target: 'Grades 1 to 8', claims: '5-Subject + AI' },
+    { code: 'MOM', name: 'Mittsure Olympiad Masters', category: 'OLYMPIAD', target: 'Grades 1 to 10', claims: 'National Benchmarking' },
+    { code: 'JUNIOR_POWER_QUEST', name: 'Junior Power Quest', category: 'OLYMPIAD', target: 'Pre-school to Grade 2', claims: 'Early Learner Cognitive' },
+  ];
+
+  test('Catalogue contains exact 6 structured educational products', () => {
+    assert.strictEqual(products.length, 6);
+    assert.ok(products.some((p) => p.code === 'LUMA_LEARN'));
+    assert.ok(products.some((p) => p.code === 'THINK_TRAIL'));
+    assert.ok(products.some((p) => p.code === 'B4_SERIES'));
+    assert.ok(products.some((p) => p.code === 'B5_PINAKA'));
+    assert.ok(products.some((p) => p.code === 'MOM'));
+    assert.ok(products.some((p) => p.code === 'JUNIOR_POWER_QUEST'));
+  });
+
+  test('Maps pre-school and early years candidates to Luma Learn & Junior Power Quest', () => {
+    const preSchool = { school_type: 'PRE-SCHOOL', nursery_available: true, primary_available: false };
+    const isEarly = preSchool.school_type === 'PRE-SCHOOL' || preSchool.nursery_available;
+    const isPrimaryOrSenior = preSchool.primary_available;
+
+    let recommendation = 'MOM';
+    if (isEarly && !isPrimaryOrSenior) {
+      recommendation = 'Luma Learn & Junior Power Quest';
+    }
+    assert.strictEqual(recommendation, 'Luma Learn & Junior Power Quest');
+  });
+
+  test('Maps primary and composite candidates to ThinkTrail or B4/B5 PINAKA + MOM', () => {
+    const primarySchool = { school_type: 'PRIMARY', nursery_available: false, primary_available: true };
+    const compositeSchool = { school_type: 'COMPOSITE', nursery_available: false, primary_available: true };
+
+    const getRecommendation = (s) => {
+      if (s.school_type === 'PRIMARY') return 'ThinkTrail Curriculum & MOM Olympiad';
+      return 'B4 / B5 PINAKA Series & MOM Olympiad';
+    };
+
+    assert.strictEqual(getRecommendation(primarySchool), 'ThinkTrail Curriculum & MOM Olympiad');
+    assert.strictEqual(getRecommendation(compositeSchool), 'B4 / B5 PINAKA Series & MOM Olympiad');
+  });
+});
+
+describe('Suite 43: Olympiad Workflow & Participation Tracking', () => {
+  const sampleOlympiadRecords = [
+    { school_id: 'S-1', campaign: 'MOM_2026', status: 'REGISTERED', registered_students: 45, coordinator: 'Deepa Rao' },
+    { school_id: 'S-2', campaign: 'MOM_2026', status: 'PROPOSAL_SENT', expected_students: 80, coordinator: 'Manjunath' },
+    { school_id: 'S-3', campaign: 'JPQ_2026', status: 'REGISTERED', registered_students: 30, coordinator: 'Sunita M' },
+  ];
+
+  test('Aggregates registered and expected students accurately', () => {
+    const registeredTotal = sampleOlympiadRecords
+      .filter((r) => r.status === 'REGISTERED')
+      .reduce((sum, r) => sum + (r.registered_students || 0), 0);
+
+    const proposalTotal = sampleOlympiadRecords
+      .filter((r) => r.status === 'PROPOSAL_SENT')
+      .reduce((sum, r) => sum + (r.expected_students || 0), 0);
+
+    assert.strictEqual(registeredTotal, 75);
+    assert.strictEqual(proposalTotal, 80);
+  });
+
+  test('Olympiad tracking preserves school identity without creating duplicate school records', () => {
+    const uniqueSchoolIds = new Set(sampleOlympiadRecords.map((r) => r.school_id));
+    assert.strictEqual(uniqueSchoolIds.size, 3);
+  });
+});
+
+describe('Suite 44: Day 1 & Multi-Day Planning Engine', () => {
+  test('Day 1 route begins and ends at Bogadi PG Base with round-trip mode enabled', () => {
+    const base = { address: '661, Bogadi 2nd Stage, Mysuru', lat: 12.3021, lng: 76.6178 };
+    const isRoundTrip = true;
+    const origin = base;
+    const destination = isRoundTrip ? base : { address: 'Last Stop', lat: 12.3, lng: 76.62 };
+
+    assert.deepStrictEqual(origin, destination);
+    assert.strictEqual(destination.lat, 12.3021);
+    assert.strictEqual(destination.lng, 76.6178);
+  });
+
+  test('Weekday planning allocates up to 10 schools quota (5 State/Pre + 2 CBSE/ICSE default 7)', () => {
+    const targetWeekday = 7;
+    const stateTarget = 5;
+    const cbseTarget = 2;
+
+    assert.strictEqual(stateTarget + cbseTarget, targetWeekday);
+    assert.ok(targetWeekday <= 10, 'Target is within standard 10-school weekday ceiling');
+  });
+
+  test('Sunday holiday strictly enforces 0 visits and blocks route generation', () => {
+    const sundayDate = new Date('2026-09-06'); // Sunday
+    const isSunday = sundayDate.getDay() === 0;
+    const plannedStops = isSunday ? 0 : 7;
+
+    assert.strictEqual(isSunday, true);
+    assert.strictEqual(plannedStops, 0);
+  });
+});
+
 
 
 

@@ -14,6 +14,8 @@ import {
   Menu,
   X,
   Compass,
+  BookOpen,
+  Trophy,
 } from 'lucide-react';
 import { subscribeToDataChanges } from '@/lib/realtimeSync';
 
@@ -71,6 +73,16 @@ export default function Navigation() {
       name: 'Round Route Planner',
       href: '/route-planner',
       icon: Route,
+    },
+    {
+      name: 'Products Catalogue',
+      href: '/products',
+      icon: BookOpen,
+    },
+    {
+      name: 'Olympiad Hub',
+      href: '/olympiad',
+      icon: Trophy,
     },
     {
       name: 'Day Schedule',
