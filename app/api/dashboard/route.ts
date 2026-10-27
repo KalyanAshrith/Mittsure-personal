@@ -6,12 +6,13 @@ export const dynamic = 'force-dynamic';
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const repName = searchParams.get('repName')?.trim() || 'Nichhenametla Kalyan Ashrith';
-    const repId = searchParams.get('repId')?.trim() || 'KA-REP-01';
+    const repName = searchParams.get('repName')?.trim();
+    const repId = searchParams.get('repId')?.trim() || '';
     const district = searchParams.get('district')?.trim() || 'ALL';
 
-    const isLeadKalyan =
-      repName.toLowerCase().includes('kalyan') || repName.toLowerCase().includes('ashrith');
+    const isLeadKalyan = Boolean(
+      repName && (repName.toLowerCase().includes('kalyan') || repName.toLowerCase().includes('ashrith'))
+    );
 
     const settings = await prisma.settings.findUnique({ where: { id: 'default' } });
     const targetGoal = settings?.target_progress_goal || 300;
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest) {
           is_current_representative: true,
         },
       });
-    } else {
+    } else if (repName) {
       // Isolated personal count for the active team member
       const memberVisits = await prisma.schoolVisit.findMany({
         where: {
@@ -50,6 +51,10 @@ export async function GET(request: NextRequest) {
       const uniqueSchoolIds = new Set(memberVisits.map((v) => v.school_id));
       personallyCompletedCount = uniqueSchoolIds.size;
       totalVisitEvents = memberVisits.length;
+    } else {
+      // Unassigned guest session - zero personal completion
+      personallyCompletedCount = 0;
+      totalVisitEvents = 0;
     }
 
     const previousRepVisitedCount = await prisma.school.count({
@@ -217,14 +222,19 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Recent visits
-    const recentVisits = await prisma.schoolVisit.findMany({
-      take: 6,
-      orderBy: { visit_date: 'desc' },
-      include: {
-        school: true,
-      },
-    });
+    // Recent visits - strictly isolated to the active representative
+    const recentVisits = repName
+      ? await prisma.schoolVisit.findMany({
+          where: isLeadKalyan
+            ? { is_current_representative: true }
+            : { representative: repName },
+          take: 6,
+          orderBy: { visit_date: 'desc' },
+          include: {
+            school: true,
+          },
+        })
+      : [];
 
     // Pending follow-ups
     const upcomingFollowups = await prisma.followUp.findMany({
@@ -317,7 +327,7 @@ export async function GET(request: NextRequest) {
         exactSNosPendingReconciliation: false,
       },
       settings: {
-        userName: settings?.user_name || 'Nichhenametla Kalyan Ashrith',
+        userName: repName || 'Personal Representative',
         userRole: settings?.user_role || 'Relationship Manager / School Outreach Representative',
         company: settings?.company || 'Mittsure Technologies LLP',
         baseAddress: settings?.base_address,

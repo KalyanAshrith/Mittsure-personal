@@ -192,7 +192,7 @@ export default function AreaDividePage() {
                 <MapPin className="w-4 h-4" />
               </span>
               <span className="text-xs font-black tracking-wider uppercase text-[#59627E]">
-                Territory Division & Field CRM • {activeUser.name} ({activeUser.targetDistrict || 'Mysuru'})
+                Territory Division & Field CRM{activeUser.name ? ` • ${activeUser.name} (${activeUser.targetDistrict || 'Mysuru'})` : ''}
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-[#020C21] tracking-tight mt-2">

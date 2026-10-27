@@ -25,9 +25,9 @@ export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeUser, setActiveUser] = useState<ActiveUser>(getActiveUser());
   const [counts, setCounts] = useState<{ completed: number; remaining: number; total: number }>({
-    completed: 151,
-    remaining: 344,
-    total: 495,
+    completed: 0,
+    remaining: 0,
+    total: 0,
   });
 
   const fetchCounts = async () => {

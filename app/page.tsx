@@ -178,7 +178,7 @@ export default function DashboardPage() {
           </div>
           <p className="text-xs sm:text-sm text-[#59627E] mt-1.5 font-medium">
             Managing <strong className="text-[#020C21] font-bold">{kpis.totalAssigned} Institutions</strong> strictly segregated across Mysuru, Mandya, Chamarajanagar, Hassan, & Kodagu from{' '}
-            <strong className="text-[#4A78B0] font-bold">PG Base (Bogadi 2nd Stage)</strong>
+            <strong className="text-[#4A78B0] font-bold">{activeUser.baseLocation ? `${activeUser.baseLocation.split(',')[0]} Base` : 'Configured Local Base'}</strong>
           </p>
         </div>
 
@@ -307,10 +307,10 @@ export default function DashboardPage() {
           <div className="pt-2 border-t border-slate-200/80 flex items-center justify-between text-[11px] text-[#59627E]">
             <div className="flex items-center gap-1 font-medium">
               <MapPin className="w-3.5 h-3.5 text-[#4A78B0] flex-shrink-0" />
-              <span className="truncate">Bogadi 2nd Stage PG Base</span>
+              <span className="truncate">{activeUser.baseLocation ? `${activeUser.baseLocation.split(',')[0]} Base` : 'Local Base'}</span>
             </div>
             <a
-              href="https://www.google.com/maps/search/?api=1&query=12.3021,76.6178"
+              href={`https://www.google.com/maps/search/?api=1&query=${activeUser.baseLat || 12.3021},${activeUser.baseLng || 76.6178}`}
               target="_blank"
               rel="noopener noreferrer"
               className="glass-pill px-2 py-0.5 text-[10px] font-black text-[#4A78B0] hover:text-[#020C21] flex items-center gap-0.5"
@@ -357,8 +357,8 @@ export default function DashboardPage() {
             <span className="text-indigo-900 font-semibold">{actionGuide?.nextAction}</span>
           </div>
           <div className="flex items-center gap-4 text-[11px] text-slate-500">
-            <span>🚩 Start: <strong>Bogadi PG Base</strong></span>
-            <span>🏁 Return: <strong>Bogadi PG Base (Round-Trip)</strong></span>
+            <span>🚩 Start: <strong>{activeUser.baseLocation ? `${activeUser.baseLocation.split(',')[0]} Base` : 'Local Base'}</strong></span>
+            <span>🏁 Return: <strong>{activeUser.baseLocation ? `${activeUser.baseLocation.split(',')[0]} Base` : 'Local Base'} (Round-Trip)</strong></span>
           </div>
         </div>
       </div>
@@ -371,11 +371,11 @@ export default function DashboardPage() {
               <div className="flex items-center gap-2">
                 <Bike className="w-5 h-5 text-[#4A78B0]" />
                 <h2 className="text-lg font-black text-[#020C21]">
-                  {todayRoute.name || 'Today\'s Round Circuit from PG Base'}
+                  {todayRoute.name || 'Today\'s Round Circuit from Local Base'}
                 </h2>
               </div>
               <p className="text-xs text-[#59627E] mt-0.5">
-                Round-trip starting at PG (Bogadi), covering {stops.length} schools, and returning to base.
+                Round-trip starting at {activeUser.baseLocation ? activeUser.baseLocation.split(',')[0] : 'base'}, covering {stops.length} schools, and returning to base.
               </p>
             </div>
 
@@ -402,8 +402,8 @@ export default function DashboardPage() {
                 🚩
               </span>
               <div>
-                <span className="font-bold text-white block">Start Origin: PG Base (Bogadi 2nd Stage)</span>
-                <span className="text-[11px] text-slate-300">661, Sahukar Chennaiah Road, Mysuru</span>
+                <span className="font-bold text-white block">Start Origin: {activeUser.baseLocation ? `${activeUser.baseLocation.split(',')[0]} Base` : 'Configured PG Base'}</span>
+                <span className="text-[11px] text-slate-300">{activeUser.baseLocation || 'Local Base Location'}</span>
               </div>
             </div>
             <span className="font-mono text-[10px] text-emerald-300 font-bold">0.0 km</span>
@@ -500,8 +500,8 @@ export default function DashboardPage() {
                 🏁
               </span>
               <div>
-                <span className="font-bold text-white block">Finish Destination: Return to PG Base</span>
-                <span className="text-[11px] text-slate-300">Complete round circuit back to Bogadi base</span>
+                <span className="font-bold text-white block">Finish Destination: Return to Base</span>
+                <span className="text-[11px] text-slate-300">Complete round circuit back to base</span>
               </div>
             </div>
             <span className="font-mono text-xs text-emerald-300 font-black">
@@ -520,7 +520,7 @@ export default function DashboardPage() {
               No School Visits Scheduled for Today
             </h3>
             <p className="text-xs text-slate-500 max-w-md mx-auto mt-1">
-              Start fresh with a pre-optimized 5+2 quota round trip from your Bogadi base or design a custom route.
+              Start fresh with a pre-optimized 5+2 quota round trip from your base or design a custom route.
             </p>
           </div>
           <div className="flex items-center justify-center gap-3 pt-2">

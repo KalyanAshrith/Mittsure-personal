@@ -125,7 +125,7 @@ export default function CompletedSchoolsPage() {
         `"${(s.area || '').replace(/"/g, '""')}"`,
         s.board,
         latestVisit ? new Date(latestVisit.visit_date).toISOString().split('T')[0] : '',
-        'Nichhenametla Kalyan Ashrith',
+        s.visits?.[0]?.representative || activeUser.name || 'Personal Representative',
         visitCount,
         `"${(latestVisit?.outcome || s.visit_status).replace(/"/g, '""')}"`,
         s.recommended_programme
@@ -154,12 +154,12 @@ export default function CompletedSchoolsPage() {
                 FIELD OUTREACH VERIFIED
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/20 text-white">
-                Representative: Kalyan Ashrith (KA-REP-01)
+                Representative: {activeUser.name || 'Personal Workspace'}
               </span>
             </div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Personally Completed Schools</h1>
             <p className="text-emerald-100 text-sm mt-1 max-w-2xl">
-              Institutions with verified physical visits conducted personally by <strong>Nichhenametla Kalyan Ashrith</strong>.
+              Institutions with verified physical visits conducted personally by <strong>{activeUser.name || 'your profile'}</strong>.
             </p>
           </div>
 
@@ -297,7 +297,7 @@ export default function CompletedSchoolsPage() {
           <span className="font-semibold text-slate-800 text-sm">
             Personally Completed Directory ({filteredSchools.length} of {schools.length})
           </span>
-          <span className="text-xs text-slate-500">Representative: Nichhenametla Kalyan Ashrith</span>
+          <span className="text-xs text-slate-500">Representative: {activeUser.name || 'Personal Workspace'}</span>
         </div>
 
         {loading ? (

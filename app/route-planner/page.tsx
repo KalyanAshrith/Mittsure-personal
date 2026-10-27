@@ -165,7 +165,7 @@ export default function RoutePlannerPage() {
   const [isRoundTrip, setIsRoundTrip] = useState(true);
   const [originPreset, setOriginPreset] = useState<'BOGADI_PG' | 'SUBURBAN' | 'PALACE' | 'CUSTOM'>('BOGADI_PG');
   const [destinationAddress, setDestinationAddress] = useState(
-    '661, Sahukar Chennaiah Road, Janatha Nagar, Bogadi 2nd Stage, TK Layout, Mysuru 570009'
+    'Bogadi / TK Layout Base, Mysuru'
   );
   const [destinationLat, setDestinationLat] = useState(12.3021);
   const [destinationLng, setDestinationLng] = useState(76.6178);
@@ -248,9 +248,9 @@ export default function RoutePlannerPage() {
     return list;
   }, [candidates, candidateSortBy]);
 
-  // Base Location (Default user PG Bogadi 2nd Stage)
+  // Base Location (Defaults to active user's configured base)
   const [baseAddress, setBaseAddress] = useState(
-    '661, Sahukar Chennaiah Road, Janatha Nagar, Bogadi 2nd Stage, TK Layout, Mysuru 570009'
+    'Bogadi / TK Layout Base, Mysuru'
   );
   const [baseLat, setBaseLat] = useState(12.3021);
   const [baseLng, setBaseLng] = useState(76.6178);
@@ -258,14 +258,17 @@ export default function RoutePlannerPage() {
   const handleOriginPresetChange = (presetKey: 'BOGADI_PG' | 'SUBURBAN' | 'PALACE' | 'CUSTOM') => {
     setOriginPreset(presetKey);
     if (presetKey === 'BOGADI_PG') {
-      const addr = '661, Sahukar Chennaiah Road, Janatha Nagar, Bogadi 2nd Stage, TK Layout, Mysuru 570009';
+      const u = getActiveUser();
+      const addr = u.baseLocation || 'Bogadi / TK Layout Base, Mysuru';
+      const lat = u.baseLat || 12.3021;
+      const lng = u.baseLng || 76.6178;
       setBaseAddress(addr);
-      setBaseLat(12.3021);
-      setBaseLng(76.6178);
+      setBaseLat(lat);
+      setBaseLng(lng);
       if (isRoundTrip) {
         setDestinationAddress(addr);
-        setDestinationLat(12.3021);
-        setDestinationLng(76.6178);
+        setDestinationLat(lat);
+        setDestinationLng(lng);
       }
     } else if (presetKey === 'SUBURBAN') {
       const addr = 'Suburban Bus Stand, B.N. Road, Mysuru, Karnataka 570001';
@@ -1272,7 +1275,7 @@ export default function RoutePlannerPage() {
                 onChange={(e) => handleOriginPresetChange(e.target.value as any)}
                 className="w-full border border-[#DDE4EE] bg-white rounded-xl px-2.5 py-1.5 font-bold text-xs text-[#020C21] focus:ring-2 focus:ring-[#0F1B31] shadow-xs"
               >
-                <option value="BOGADI_PG">📍 Bogadi 2nd Stage PG (Default Base)</option>
+                <option value="BOGADI_PG">📍 My Starting Residence / PG Base</option>
                 <option value="SUBURBAN">🚌 Mysuru Suburban Bus Stand</option>
                 <option value="PALACE">🏰 Mysore Palace / Central Gate</option>
                 <option value="CUSTOM">✏️ Custom Start Location</option>

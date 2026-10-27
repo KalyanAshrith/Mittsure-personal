@@ -68,15 +68,28 @@ export default function Header() {
               </span>
             </div>
             <div className="flex items-center gap-1.5 text-xs text-[#59627E]">
-              <span className="font-bold text-[#0F182F] flex items-center gap-1">
-                <User className="w-3.5 h-3.5 text-emerald-600" />
-                <span>{activeUser.name}</span>
-              </span>
-              <span>•</span>
-              <span className="flex items-center gap-1 text-[#4A78B0] font-medium truncate max-w-[200px]" title={activeUser.baseLocation}>
-                <MapPin className="w-3.5 h-3.5 text-[#4A78B0] flex-shrink-0" />
-                <span className="truncate">{activeUser.baseLocation.split(',')[0]} Base</span>
-              </span>
+              {activeUser.name ? (
+                <>
+                  <span className="font-bold text-[#0F182F] flex items-center gap-1">
+                    <User className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>{activeUser.name}</span>
+                  </span>
+                  {activeUser.baseLocation && (
+                    <>
+                      <span>•</span>
+                      <span className="flex items-center gap-1 text-[#4A78B0] font-medium truncate max-w-[200px]" title={activeUser.baseLocation}>
+                        <MapPin className="w-3.5 h-3.5 text-[#4A78B0] flex-shrink-0" />
+                        <span className="truncate">{activeUser.baseLocation.split(',')[0]} Base</span>
+                      </span>
+                    </>
+                  )}
+                </>
+              ) : (
+                <span className="font-bold text-amber-700 flex items-center gap-1">
+                  <User className="w-3.5 h-3.5 text-amber-600" />
+                  <span>Personal Workspace • Not Assigned Yet</span>
+                </span>
+              )}
             </div>
           </div>
         </div>
@@ -89,11 +102,11 @@ export default function Header() {
             onClick={() => {
               window.dispatchEvent(new CustomEvent('mittsure_open_onboarding'));
             }}
-            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white/80 hover:bg-white text-[#0F1B31] border border-white/90 shadow-xs transition active:scale-95"
-            title="Switch Representative or Upload Allotment PDF"
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white/80 hover:bg-white text-[#0F182F] border border-white/90 shadow-xs transition active:scale-95"
+            title="Set Up Representative Profile or Upload Allotment PDF"
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>{activeUser.isDefaultLead ? 'Switch Profile / Upload PDF' : 'Switch Workspace'}</span>
+            <span>{activeUser.name ? 'Switch Profile / Upload PDF' : 'Set Up Profile / Upload PDF'}</span>
           </Link>
           {/* Online/Sync Status Indicator */}
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold glass-pill">

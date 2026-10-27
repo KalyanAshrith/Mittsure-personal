@@ -142,12 +142,12 @@ export default function RemainingSchoolsPage() {
                 FIELD OUTREACH BACKLOG
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/20 text-white">
-                {activeUser.name} • {activeUser.targetDistrict || 'Mysuru'}
+                {activeUser.name || 'Personal Workspace'} • {activeUser.targetDistrict || 'Mysuru'}
               </span>
             </div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Remaining Schools Database</h1>
             <p className="text-amber-100 text-sm mt-1 max-w-2xl">
-              Institutions pending personal visit by <strong>{activeUser.name}</strong>. Workspace strictly filtered to {activeUser.name}'s assigned records.
+              Institutions pending personal visit by <strong>{activeUser.name || 'your profile'}</strong>. Workspace strictly filtered to your assigned records.
             </p>
           </div>
 
@@ -182,13 +182,13 @@ export default function RemainingSchoolsPage() {
           </div>
           <div className="bg-white/10 rounded-xl p-3">
             <p className="text-amber-200 text-xs font-medium uppercase tracking-wider">Representative</p>
-            <p className="text-lg font-black truncate">{activeUser.name.split(' ')[0]}</p>
-            <p className="text-xs text-amber-200/80 mt-0.5">{activeUser.targetDistrict}</p>
+            <p className="text-lg font-black truncate">{activeUser.name ? activeUser.name.split(' ')[0] : 'Personal'}</p>
+            <p className="text-xs text-amber-200/80 mt-0.5">{activeUser.targetDistrict || 'Mysuru'}</p>
           </div>
           <div className="bg-white/10 rounded-xl p-3">
             <p className="text-amber-200 text-xs font-medium uppercase tracking-wider">Previous Rep Visited</p>
             <p className="text-2xl font-black">{prevRepCount}</p>
-            <p className="text-xs text-amber-200/80 mt-0.5">Requires {activeUser.name.split(' ')[0]}'s 1st visit</p>
+            <p className="text-xs text-amber-200/80 mt-0.5">Requires {activeUser.name ? activeUser.name.split(' ')[0] : 'your'} 1st visit</p>
           </div>
           <div className="bg-white/10 rounded-xl p-3">
             <p className="text-amber-200 text-xs font-medium uppercase tracking-wider">Est. Days at {activeUser.dailyGoal || 7}/Day</p>

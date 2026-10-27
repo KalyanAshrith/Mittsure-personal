@@ -179,7 +179,7 @@ export default function ReconciliationPage() {
             </div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Data Reconciliation & Visit Audit</h1>
             <p className="text-indigo-200 text-sm mt-1 max-w-2xl">
-              Compare reported field completions against the master 487-school allotment. Detect discrepancies, resolve missing S.Nos, and maintain database integrity for <strong>Nichhenametla Kalyan Ashrith</strong>.
+              Compare reported field completions against the master allotment. Detect discrepancies, resolve missing S.Nos, and maintain database integrity for your personal outreach records.
             </p>
           </div>
 
@@ -242,7 +242,7 @@ export default function ReconciliationPage() {
           <div>
             <h3 className="font-bold text-slate-800 text-base">Current Verified Completed S.No Matrix</h3>
             <p className="text-xs text-slate-500">
-              The exactly verified {data?.completedCount ?? 22} schools personally visited by Nichhenametla Kalyan Ashrith.
+              The verified completed schools personally visited in your active workspace.
             </p>
           </div>
           <span className="px-2.5 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full">

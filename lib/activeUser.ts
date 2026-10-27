@@ -14,12 +14,26 @@ export interface ActiveUser {
   lastActive: string;
 }
 
+export const DEFAULT_GUEST_USER: ActiveUser = {
+  id: 'REP-GUEST',
+  name: '',
+  phone: '',
+  email: '',
+  baseLocation: '',
+  baseLat: 12.3021,
+  baseLng: 76.6178,
+  targetDistrict: 'Mysuru',
+  dailyGoal: 7,
+  isDefaultLead: false,
+  lastActive: new Date().toISOString(),
+};
+
 export const DEFAULT_LEAD_USER: ActiveUser = {
-  id: 'KA-REP-01',
-  name: 'Nichhenametla Kalyan Ashrith',
-  phone: '+91 94939 65636',
-  email: 'kalyan.ashrith@mittsure.com',
-  baseLocation: '661, Sahukar Chennaiah Road, Janatha Nagar, Bogadi 2nd Stage, TK Layout, Mysuru 570009',
+  id: 'REP-LEAD',
+  name: 'Lead Representative',
+  phone: '',
+  email: '',
+  baseLocation: 'Mysuru, Karnataka',
   baseLat: 12.3021,
   baseLng: 76.6178,
   targetDistrict: 'Mysuru',
@@ -32,20 +46,20 @@ const STORAGE_KEY = 'mittsure_active_user_session';
 
 export function getActiveUser(): ActiveUser {
   if (typeof window === 'undefined') {
-    return DEFAULT_LEAD_USER;
+    return DEFAULT_GUEST_USER;
   }
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (parsed && parsed.name) {
+      if (parsed && typeof parsed === 'object') {
         return parsed;
       }
     }
   } catch (e) {
     console.error('Error reading active user from localStorage:', e);
   }
-  return DEFAULT_LEAD_USER;
+  return DEFAULT_GUEST_USER;
 }
 
 export function setActiveUser(user: ActiveUser): void {
@@ -59,8 +73,8 @@ export function setActiveUser(user: ActiveUser): void {
 }
 
 export function resetToLeadUser(): ActiveUser {
-  setActiveUser(DEFAULT_LEAD_USER);
-  return DEFAULT_LEAD_USER;
+  setActiveUser(DEFAULT_GUEST_USER);
+  return DEFAULT_GUEST_USER;
 }
 
 export function subscribeToUserChange(callback: (user: ActiveUser) => void): () => void {
