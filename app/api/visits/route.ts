@@ -107,8 +107,8 @@ export async function POST(request: NextRequest) {
       data: {
         school_id: school.id,
         visit_date: parsedVisitDate,
-        representative: 'Nichhenametla Kalyan Ashrith',
-        representative_id: 'KA-REP-01',
+        representative: body.representative || 'Nichhenametla Kalyan Ashrith',
+        representative_id: body.representative_id || 'KA-REP-01',
         is_current_representative: true,
         visit_type: visitType,
         purpose,

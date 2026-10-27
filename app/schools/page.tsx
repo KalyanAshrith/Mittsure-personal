@@ -32,6 +32,7 @@ import RecordVisitModal from '@/components/RecordVisitModal';
 import AIMarkVisitedModal from '@/components/AIMarkVisitedModal';
 import { SchoolData } from '@/lib/types';
 import { subscribeToDataChanges, notifyDataChange } from '@/lib/realtimeSync';
+import { getActiveUser, subscribeToUserChange, ActiveUser } from '@/lib/activeUser';
 
 export default function SchoolMasterPage() {
   const [schools, setSchools] = useState<SchoolData[]>([]);
@@ -127,7 +128,9 @@ export default function SchoolMasterPage() {
   const fetchSchools = async () => {
     setLoading(true);
     try {
+      const activeUser = getActiveUser();
       const params = new URLSearchParams();
+      if (activeUser?.name) params.append('repName', activeUser.name);
       if (search) params.append('search', search);
       if (board !== 'ALL') params.append('board', board);
       if (schoolType !== 'ALL') params.append('schoolType', schoolType);
@@ -232,10 +235,16 @@ export default function SchoolMasterPage() {
   }, [search, board, schoolType, area, district, visitStatus, priority, programme]);
 
   useEffect(() => {
+    const unsubUser = subscribeToUserChange(() => {
+      fetchSchools();
+    });
     const unsubscribe = subscribeToDataChanges(() => {
       fetchSchools();
     });
-    return () => unsubscribe();
+    return () => {
+      unsubUser();
+      unsubscribe();
+    };
   }, []);
 
   const handleAddSchool = async (e: React.FormEvent) => {

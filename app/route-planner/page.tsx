@@ -51,8 +51,10 @@ import {
 } from '@/lib/recommendationEngine';
 import { RouteOptimizationResult, SchoolData, TravelMode } from '@/lib/types';
 import { notifyDataChange, subscribeToDataChanges } from '@/lib/realtimeSync';
+import { getActiveUser, subscribeToUserChange, ActiveUser } from '@/lib/activeUser';
 
 export default function RoutePlannerPage() {
+  const [activeUser, setActiveUser] = useState<ActiveUser>(getActiveUser());
   const [allSchools, setAllSchools] = useState<SchoolData[]>([]);
   const [candidates, setCandidates] = useState<CandidateSchool[]>([]);
   const [selectedSchoolIds, setSelectedSchoolIds] = useState<string[]>([]);
@@ -338,8 +340,12 @@ export default function RoutePlannerPage() {
     async function loadInitialData() {
       try {
         setLoading(true);
+        const u = getActiveUser();
+        setActiveUser(u);
+
+        const repParam = u?.name ? `?repName=${encodeURIComponent(u.name)}` : '';
         const [schoolsRes, settingsRes] = await Promise.all([
-          fetch('/api/schools', { cache: 'no-store' }),
+          fetch(`/api/schools${repParam}`, { cache: 'no-store' }),
           fetch('/api/settings', { cache: 'no-store' }),
         ]);
 
@@ -351,11 +357,24 @@ export default function RoutePlannerPage() {
           setAreas(schoolsJson.areas || []);
         }
 
-        if (settingsJson.settings) {
+        if (u && !u.isDefaultLead && u.baseLocation) {
+          setBaseAddress(u.baseLocation);
+          setBaseLat(u.baseLat || 12.3021);
+          setBaseLng(u.baseLng || 76.6178);
+          if (isRoundTrip) {
+            setDestinationAddress(u.baseLocation);
+            setDestinationLat(u.baseLat || 12.3021);
+            setDestinationLng(u.baseLng || 76.6178);
+          }
+        } else if (settingsJson.settings) {
           setBaseAddress(settingsJson.settings.base_address);
           setBaseLat(settingsJson.settings.base_latitude);
           setBaseLng(settingsJson.settings.base_longitude);
           setTravelMode(settingsJson.settings.preferred_travel_mode || 'TWO_WHEELER');
+        }
+
+        if (u && u.targetDistrict && u.targetDistrict !== 'ALL' && u.targetDistrict !== 'Mysuru') {
+          setDistrictFilter(u.targetDistrict);
         }
       } catch (err) {
         console.error('Error loading initial data:', err);
@@ -365,9 +384,24 @@ export default function RoutePlannerPage() {
     }
     loadInitialData();
 
+    const unsubUser = subscribeToUserChange((newUser) => {
+      setActiveUser(newUser);
+      if (!newUser.isDefaultLead && newUser.baseLocation) {
+        setBaseAddress(newUser.baseLocation);
+        setBaseLat(newUser.baseLat || 12.3021);
+        setBaseLng(newUser.baseLng || 76.6178);
+      }
+      if (newUser.targetDistrict && newUser.targetDistrict !== 'ALL' && newUser.targetDistrict !== 'Mysuru') {
+        setDistrictFilter(newUser.targetDistrict);
+      }
+      loadInitialData();
+    });
+
     const unsubscribe = subscribeToDataChanges(async (entity) => {
       if (entity === 'visit' || entity === 'route') {
-        const schoolsRes = await fetch('/api/schools', { cache: 'no-store' });
+        const u = getActiveUser();
+        const repParam = u?.name ? `?repName=${encodeURIComponent(u.name)}` : '';
+        const schoolsRes = await fetch(`/api/schools${repParam}`, { cache: 'no-store' });
         const schoolsJson = await schoolsRes.json();
         if (schoolsJson.schools) {
           setAllSchools(schoolsJson.schools);
@@ -376,7 +410,10 @@ export default function RoutePlannerPage() {
       }
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubUser();
+      unsubscribe();
+    };
   }, [date]);
 
   // Check and load existing plan for current date

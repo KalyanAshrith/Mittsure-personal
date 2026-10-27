@@ -5,8 +5,10 @@ import Link from 'next/link';
 import { SchoolData } from '@/lib/types';
 import RecordVisitModal from '@/components/RecordVisitModal';
 import { subscribeToDataChanges } from '@/lib/realtimeSync';
+import { getActiveUser, subscribeToUserChange, ActiveUser } from '@/lib/activeUser';
 
 export default function RemainingSchoolsPage() {
+  const [activeUser, setActiveUser] = useState<ActiveUser>(getActiveUser());
   const [schools, setSchools] = useState<SchoolData[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -21,12 +23,17 @@ export default function RemainingSchoolsPage() {
   const fetchRemainingSchools = async () => {
     setLoading(true);
     try {
+      const u = getActiveUser();
       const params = new URLSearchParams();
-      params.append('personallyVisited', 'false'); // Only unvisited by Kalyan
+      params.append('personallyVisited', 'false'); // Only unvisited by active user
+      if (u?.name) params.append('repName', u.name);
       if (search) params.append('search', search);
       if (selectedArea !== 'ALL') params.append('area', selectedArea);
       if (selectedBoard !== 'ALL') params.append('board', selectedBoard);
       if (selectedPriority !== 'ALL') params.append('priority', selectedPriority);
+      if (u?.targetDistrict && u.targetDistrict !== 'ALL' && u.targetDistrict !== 'Mysuru' && !search) {
+        params.append('district', u.targetDistrict);
+      }
 
       const res = await fetch(`/api/schools?${params.toString()}`, { cache: 'no-store' });
       const data = await res.json();
@@ -40,16 +47,24 @@ export default function RemainingSchoolsPage() {
   };
 
   useEffect(() => {
+    setActiveUser(getActiveUser());
     fetchRemainingSchools();
-  }, [search, selectedArea, selectedBoard, selectedPriority]);
 
-  useEffect(() => {
-    const unsubscribe = subscribeToDataChanges((changeType) => {
+    const unsubUser = subscribeToUserChange((u) => {
+      setActiveUser(u);
+      fetchRemainingSchools();
+    });
+
+    const unsubData = subscribeToDataChanges((changeType) => {
       if (changeType === 'visit' || changeType === 'route' || changeType === 'all') {
         fetchRemainingSchools();
       }
     });
-    return () => unsubscribe();
+
+    return () => {
+      unsubUser();
+      unsubData();
+    };
   }, [search, selectedArea, selectedBoard, selectedPriority]);
 
   const handleExportCSV = () => {
@@ -127,12 +142,12 @@ export default function RemainingSchoolsPage() {
                 FIELD OUTREACH BACKLOG
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-white/20 text-white">
-                Master List: 487 Total
+                {activeUser.name} • {activeUser.targetDistrict || 'Mysuru'}
               </span>
             </div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">Remaining Schools Database</h1>
             <p className="text-amber-100 text-sm mt-1 max-w-2xl">
-              Institutions pending first personal visit by <strong>Nichhenametla Kalyan Ashrith</strong>. Master allocation strictly tracks 487 schools.
+              Institutions pending personal visit by <strong>{activeUser.name}</strong>. Workspace strictly filtered to {activeUser.name}'s assigned records.
             </p>
           </div>
 
@@ -153,7 +168,7 @@ export default function RemainingSchoolsPage() {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
               </svg>
-              Plan 5-School Route
+              Plan Daily Route
             </Link>
           </div>
         </div>
@@ -161,23 +176,23 @@ export default function RemainingSchoolsPage() {
         {/* Dynamic Metric Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-5 border-t border-white/20">
           <div className="bg-white/10 rounded-xl p-3">
-            <p className="text-amber-200 text-xs font-medium uppercase tracking-wider">Remaining Schools</p>
+            <p className="text-amber-200 text-xs font-medium uppercase tracking-wider">Remaining Unvisited</p>
             <p className="text-2xl font-black">{schools.length}</p>
-            <p className="text-xs text-amber-200/80 mt-0.5">{((schools.length / 487) * 100).toFixed(1)}% of total allotment</p>
+            <p className="text-xs text-amber-200/80 mt-0.5">Pending your visit</p>
           </div>
           <div className="bg-white/10 rounded-xl p-3">
-            <p className="text-amber-200 text-xs font-medium uppercase tracking-wider">Personally Completed</p>
-            <p className="text-2xl font-black">{487 - schools.length}</p>
-            <p className="text-xs text-amber-200/80 mt-0.5">Unique institutions covered</p>
+            <p className="text-amber-200 text-xs font-medium uppercase tracking-wider">Representative</p>
+            <p className="text-lg font-black truncate">{activeUser.name.split(' ')[0]}</p>
+            <p className="text-xs text-amber-200/80 mt-0.5">{activeUser.targetDistrict}</p>
           </div>
           <div className="bg-white/10 rounded-xl p-3">
             <p className="text-amber-200 text-xs font-medium uppercase tracking-wider">Previous Rep Visited</p>
             <p className="text-2xl font-black">{prevRepCount}</p>
-            <p className="text-xs text-amber-200/80 mt-0.5">Requires Kalyan's 1st visit</p>
+            <p className="text-xs text-amber-200/80 mt-0.5">Requires {activeUser.name.split(' ')[0]}'s 1st visit</p>
           </div>
           <div className="bg-white/10 rounded-xl p-3">
-            <p className="text-amber-200 text-xs font-medium uppercase tracking-wider">Est. Days at 5/Day</p>
-            <p className="text-2xl font-black">{Math.ceil(schools.length / 5)}</p>
+            <p className="text-amber-200 text-xs font-medium uppercase tracking-wider">Est. Days at {activeUser.dailyGoal || 7}/Day</p>
+            <p className="text-2xl font-black">{Math.ceil(schools.length / (activeUser.dailyGoal || 7))}</p>
             <p className="text-xs text-amber-200/80 mt-0.5">Mon-Sat working days</p>
           </div>
         </div>

@@ -17,6 +17,7 @@ import {
 import { SchoolData } from '@/lib/types';
 import { verifyLocation } from '@/lib/haversine';
 import { notifyDataChange } from '@/lib/realtimeSync';
+import { getActiveUser } from '@/lib/activeUser';
 
 interface RecordVisitModalProps {
   school: SchoolData | null;
@@ -140,6 +141,7 @@ export default function RecordVisitModal({
     setIsSubmitting(true);
 
     try {
+      const activeUser = getActiveUser();
       const res = await fetch('/api/visits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -148,6 +150,8 @@ export default function RecordVisitModal({
           visit_date: visitDate,
           purpose,
           programme_discussed: programmeDiscussed,
+          representative: activeUser.name,
+          representative_id: activeUser.id,
           contact_person: contactPerson,
           contact_number: contactNumber,
           designation,

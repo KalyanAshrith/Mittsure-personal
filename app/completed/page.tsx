@@ -7,8 +7,10 @@ import { SchoolData } from '@/lib/types';
 import RecordVisitModal from '@/components/RecordVisitModal';
 import RescheduleModal from '@/components/RescheduleModal';
 import { subscribeToDataChanges } from '@/lib/realtimeSync';
+import { getActiveUser, subscribeToUserChange, ActiveUser } from '@/lib/activeUser';
 
 export default function CompletedSchoolsPage() {
+  const [activeUser, setActiveUser] = useState<ActiveUser>(getActiveUser());
   const [schools, setSchools] = useState<SchoolData[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -21,8 +23,10 @@ export default function CompletedSchoolsPage() {
   const fetchCompletedSchools = async () => {
     setLoading(true);
     try {
+      const u = getActiveUser();
       const params = new URLSearchParams();
-      params.append('personallyVisited', 'true'); // Only personally visited by Kalyan
+      params.append('personallyVisited', 'true');
+      if (u?.name) params.append('repName', u.name);
       if (search) params.append('search', search);
 
       const res = await fetch(`/api/schools?${params.toString()}`, { cache: 'no-store' });
@@ -36,16 +40,24 @@ export default function CompletedSchoolsPage() {
   };
 
   useEffect(() => {
+    setActiveUser(getActiveUser());
     fetchCompletedSchools();
-  }, [search]);
 
-  useEffect(() => {
+    const unsubUser = subscribeToUserChange((u) => {
+      setActiveUser(u);
+      fetchCompletedSchools();
+    });
+
     const unsubscribe = subscribeToDataChanges((changeType) => {
       if (changeType === 'visit' || changeType === 'route' || changeType === 'all') {
         fetchCompletedSchools();
       }
     });
-    return () => unsubscribe();
+
+    return () => {
+      unsubUser();
+      unsubscribe();
+    };
   }, [search]);
 
   // Total visits by Kalyan (counting revisits)

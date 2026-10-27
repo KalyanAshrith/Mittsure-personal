@@ -27,6 +27,7 @@ import {
 import RecordVisitModal from '@/components/RecordVisitModal';
 import { SchoolData } from '@/lib/types';
 import { subscribeToDataChanges, notifyDataChange } from '@/lib/realtimeSync';
+import { getActiveUser, subscribeToUserChange, ActiveUser } from '@/lib/activeUser';
 
 interface AreaGroup {
   areaName: string;
@@ -44,6 +45,7 @@ interface AreaGroup {
 }
 
 export default function AreaDividePage() {
+  const [activeUser, setActiveUser] = useState<ActiveUser>(getActiveUser());
   const [data, setData] = useState<{
     summary: {
       totalAreas: number;
@@ -95,12 +97,20 @@ export default function AreaDividePage() {
   const fetchAreaBreakdown = async () => {
     try {
       setLoading(true);
+      const u = getActiveUser();
       const params = new URLSearchParams({
         search: searchQuery,
         status: statusFilter,
         board: boardFilter,
         sortBy: areaSortBy,
       });
+      if (u?.name) params.append('repName', u.name);
+      if (u?.baseLat) params.append('baseLat', String(u.baseLat));
+      if (u?.baseLng) params.append('baseLng', String(u.baseLng));
+      if (u?.targetDistrict && u.targetDistrict !== 'ALL' && u.targetDistrict !== 'Mysuru') {
+        params.append('district', u.targetDistrict);
+      }
+
       const res = await fetch(`/api/schools/area-breakdown?${params.toString()}`, { cache: 'no-store' });
       if (!res.ok) throw new Error('Failed to fetch area breakdown');
       const json = await res.json();
@@ -119,11 +129,22 @@ export default function AreaDividePage() {
   };
 
   useEffect(() => {
+    setActiveUser(getActiveUser());
     fetchAreaBreakdown();
+
+    const unsubUser = subscribeToUserChange((u) => {
+      setActiveUser(u);
+      fetchAreaBreakdown();
+    });
+
     const unsubscribe = subscribeToDataChanges(() => {
       fetchAreaBreakdown();
     });
-    return () => unsubscribe();
+
+    return () => {
+      unsubUser();
+      unsubscribe();
+    };
   }, [searchQuery, statusFilter, boardFilter, areaSortBy]);
 
   const toggleAreaExpand = (areaName: string) => {
@@ -171,7 +192,7 @@ export default function AreaDividePage() {
                 <MapPin className="w-4 h-4" />
               </span>
               <span className="text-xs font-black tracking-wider uppercase text-[#59627E]">
-                Territory Division & Field CRM
+                Territory Division & Field CRM • {activeUser.name} ({activeUser.targetDistrict || 'Mysuru'})
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-[#020C21] tracking-tight mt-2">

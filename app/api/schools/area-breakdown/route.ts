@@ -13,19 +13,21 @@ export async function GET(request: NextRequest) {
     const boardFilter = searchParams.get('board') || 'ALL';
     const districtFilter = searchParams.get('district') || 'ALL'; // ALL, Mysuru, Chamarajanagar, Mandya
     const sortBy = searchParams.get('sortBy') || 'unvisited'; // unvisited, total, proximity, name
+    const repName = searchParams.get('repName')?.trim();
+    const isLeadKalyan = !repName || repName.toLowerCase().includes('kalyan') || repName.toLowerCase().includes('ashrith');
 
     // Fetch user settings for PG base
     const settings = await prisma.settings.findUnique({ where: { id: 'default' } });
-    const baseLat = settings?.base_latitude || 12.3021;
-    const baseLng = settings?.base_longitude || 76.6178;
+    const paramLat = searchParams.get('baseLat');
+    const paramLng = searchParams.get('baseLng');
+    const baseLat = paramLat ? parseFloat(paramLat) : (settings?.base_latitude || 12.3021);
+    const baseLng = paramLng ? parseFloat(paramLng) : (settings?.base_longitude || 76.6178);
 
     // Fetch all schools from the master allotment
     const rawSchools = await prisma.school.findMany({
       include: {
         visits: {
-          where: { is_current_representative: true },
           orderBy: { visit_date: 'desc' },
-          take: 1,
         },
       },
       orderBy: { s_no: 'asc' },
@@ -51,7 +53,9 @@ export async function GET(request: NextRequest) {
 
     for (const s of schools) {
       const areaKey = (s.area || 'Mysuru Central').trim();
-      const isVisited = Boolean(s.visited_by_current_user || s.visit_status === 'VISITED');
+      const isVisited = isLeadKalyan
+        ? Boolean(s.visited_by_current_user || s.visit_status === 'VISITED')
+        : s.visits.some(v => v.representative?.toLowerCase() === repName?.toLowerCase());
       const isCbse = s.board === 'CBSE' || s.board === 'ICSE';
       const straightDist = calculateDistanceKm(baseLat, baseLng, s.latitude, s.longitude);
       const roadDist = estimateRoadDistanceKm(baseLat, baseLng, s.latitude, s.longitude);
@@ -176,7 +180,9 @@ export async function GET(request: NextRequest) {
 
     // Overall CRM totals
     const totalSchools = schools.length;
-    const totalVisited = schools.filter((s) => s.visited_by_current_user || s.visit_status === 'VISITED').length;
+    const totalVisited = isLeadKalyan
+      ? schools.filter((s) => s.visited_by_current_user || s.visit_status === 'VISITED').length
+      : schools.filter((s) => s.visits.some(v => v.representative?.toLowerCase() === repName?.toLowerCase())).length;
     const totalUnvisited = totalSchools - totalVisited;
     const overallCompletionRate = totalSchools > 0 ? Number(((totalVisited / totalSchools) * 100).toFixed(1)) : 0;
 
