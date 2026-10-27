@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { SchoolData } from '@/lib/types';
 import { subscribeToDataChanges, notifyDataChange } from '@/lib/realtimeSync';
+import TeamSupporterHero from '@/components/TeamSupporterHero';
 
 export default function DashboardPage() {
   const [data, setData] = useState<any>(null);
@@ -145,6 +146,9 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-7 pb-12 animate-fade-in">
+      {/* 1. Beginning of Website: Team Member Onboarding, PDF Upload & Field Supporter Copilot */}
+      <TeamSupporterHero />
+
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
