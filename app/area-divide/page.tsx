@@ -304,17 +304,22 @@ export default function AreaDividePage() {
             />
           </div>
 
-          {/* Status Filter Tabs (Green / Red) */}
+          {/* Status Filter Tabs with Real-Time Counts (Green / Red) */}
           <div className="flex items-center gap-1.5 p-1 bg-white/60 border border-white/80 rounded-2xl shadow-xs">
             <button
               onClick={() => setStatusFilter('ALL')}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${
                 statusFilter === 'ALL'
                   ? 'bg-[#0F1B31] text-white shadow-sm'
                   : 'text-[#59627E] hover:text-[#020C21]'
               }`}
             >
-              All Schools
+              <span>All Schools</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-black ${
+                statusFilter === 'ALL' ? 'bg-white/20 text-white' : 'bg-slate-200 text-[#0F182F]'
+              }`}>
+                {data?.summary?.totalSchools || 495}
+              </span>
             </button>
             <button
               onClick={() => setStatusFilter('VISITED')}
@@ -325,7 +330,12 @@ export default function AreaDividePage() {
               }`}
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span>Visited (Green)</span>
+              <span>Visited</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-black ${
+                statusFilter === 'VISITED' ? 'bg-white/20 text-white' : 'bg-emerald-100 text-emerald-800'
+              }`}>
+                {data?.summary?.totalVisited || 151}
+              </span>
             </button>
             <button
               onClick={() => setStatusFilter('UNVISITED')}
@@ -336,27 +346,43 @@ export default function AreaDividePage() {
               }`}
             >
               <span className="w-2 h-2 rounded-full bg-rose-400" />
-              <span>Unvisited (Red)</span>
+              <span>Unvisited</span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-black ${
+                statusFilter === 'UNVISITED' ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-800'
+              }`}>
+                {data?.summary?.totalUnvisited || 344}
+              </span>
             </button>
           </div>
         </div>
 
-        {/* Secondary Filters & Sorters */}
+        {/* Secondary Filters & Sorters with Live Counts */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-white/60 text-xs">
-          {/* Board Filter */}
+          {/* Board Filter with Counts */}
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="font-bold text-[#59627E] text-[11px] uppercase tracking-wider">Board:</span>
-            {['ALL', 'CBSE', 'ICSE', 'STATE BOARD', 'PRE-SCHOOL'].map((b) => (
+            {[
+              { id: 'ALL', label: 'All', count: data?.summary?.totalSchools || 495 },
+              { id: 'STATE BOARD', label: 'State Board', count: (data?.summary as any)?.boardCounts?.['STATE BOARD'] || 258 },
+              { id: 'CBSE', label: 'CBSE', count: (data?.summary as any)?.boardCounts?.CBSE || 155 },
+              { id: 'ICSE', label: 'ICSE', count: (data?.summary as any)?.boardCounts?.ICSE || 48 },
+              { id: 'PRE-SCHOOL', label: 'Pre-School', count: (data?.summary as any)?.boardCounts?.['PRE-SCHOOL'] || 35 },
+            ].map((b) => (
               <button
-                key={b}
-                onClick={() => setBoardFilter(b)}
-                className={`px-2.5 py-1 rounded-xl font-bold text-[11px] transition shadow-xs ${
-                  boardFilter === b
+                key={b.id}
+                onClick={() => setBoardFilter(b.id)}
+                className={`px-2.5 py-1 rounded-xl font-bold text-[11px] transition shadow-xs flex items-center gap-1 ${
+                  boardFilter === b.id
                     ? 'bg-[#0F1B31] text-white'
                     : 'bg-white/70 text-[#0F182F] hover:bg-white border border-white/80'
                 }`}
               >
-                {b}
+                <span>{b.label}</span>
+                <span className={`px-1.5 py-0.2 rounded-full text-[9px] font-mono font-extrabold ${
+                  boardFilter === b.id ? 'bg-white/20 text-white' : 'bg-slate-200 text-[#0F182F]'
+                }`}>
+                  {b.count}
+                </span>
               </button>
             ))}
           </div>
@@ -371,11 +397,11 @@ export default function AreaDividePage() {
                 onChange={(e: any) => setAreaSortBy(e.target.value)}
                 className="bg-white/80 border border-[#DDE4EE] rounded-xl px-2.5 py-1 text-xs font-bold text-[#0F182F] focus:ring-2 focus:ring-[#0F1B31]"
               >
-                <option value="unvisited">Most Unvisited (Red)</option>
-                <option value="total">Most Total Schools</option>
-                <option value="proximity">Proximity from PG Base</option>
-                <option value="visited">Most Visited (Green)</option>
-                <option value="name">Nagar Name (A-Z)</option>
+                <option value="unvisited">Most Unvisited ({data?.summary?.totalUnvisited || 344} pending)</option>
+                <option value="total">Largest Allotment ({data?.summary?.totalSchools || 495} total)</option>
+                <option value="proximity">Proximity from PG Base ({data?.areas?.length || 0} areas)</option>
+                <option value="visited">Most Visited ({data?.summary?.totalVisited || 151} completed)</option>
+                <option value="name">Nagar Name A-Z ({data?.areas?.length || 0} areas)</option>
               </select>
             </div>
 

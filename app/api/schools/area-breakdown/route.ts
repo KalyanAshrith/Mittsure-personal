@@ -196,6 +196,17 @@ export async function GET(request: NextRequest) {
       },
     };
 
+    // Board counts summary across master schools
+    const boardCounts = {
+      ALL: totalSchools,
+      CBSE: schools.filter((s) => s.board === 'CBSE').length,
+      ICSE: schools.filter((s) => s.board === 'ICSE').length,
+      'STATE BOARD': schools.filter((s) => s.board === 'STATE BOARD').length,
+      'PRE-SCHOOL': schools.filter((s) =>
+        ['PRE-SCHOOL', 'PLAY SCHOOL', 'NURSERY', 'MONTESSORI', 'KINDERGARTEN'].includes(s.school_type?.toUpperCase())
+      ).length,
+    };
+
     return NextResponse.json({
       success: true,
       pgBase: {
@@ -210,6 +221,7 @@ export async function GET(request: NextRequest) {
         totalUnvisited,
         overallCompletionRate,
         districtsSummary,
+        boardCounts,
       },
       areas: areasList,
     });

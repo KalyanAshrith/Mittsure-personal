@@ -156,11 +156,74 @@ export async function GET(request: NextRequest) {
       orderBy: { district: 'asc' },
     });
 
+    // Compute global summary counts across the entire master allotment
+    const allMasterSchools = await prisma.school.findMany({
+      select: {
+        id: true,
+        board: true,
+        school_type: true,
+        district: true,
+        priority: true,
+        area: true,
+        visited_by_current_user: true,
+        visit_status: true,
+        recommended_programme: true,
+      },
+    });
+
+    const globalCounts = {
+      total: allMasterSchools.length,
+      visited: allMasterSchools.filter((s) => s.visited_by_current_user || s.visit_status === 'VISITED').length,
+      unvisited: allMasterSchools.filter((s) => !s.visited_by_current_user && s.visit_status !== 'VISITED').length,
+      byBoard: {} as Record<string, number>,
+      byDistrict: {} as Record<string, number>,
+      byType: {} as Record<string, number>,
+      byPriority: {} as Record<string, number>,
+      byProgramme: {} as Record<string, number>,
+      byArea: {} as Record<string, number>,
+      byStatus: {} as Record<string, number>,
+    };
+
+    allMasterSchools.forEach((s) => {
+      if (s.board) globalCounts.byBoard[s.board] = (globalCounts.byBoard[s.board] || 0) + 1;
+      if (s.district) globalCounts.byDistrict[s.district] = (globalCounts.byDistrict[s.district] || 0) + 1;
+      if (s.school_type) globalCounts.byType[s.school_type] = (globalCounts.byType[s.school_type] || 0) + 1;
+      if (s.priority) globalCounts.byPriority[s.priority] = (globalCounts.byPriority[s.priority] || 0) + 1;
+      if (s.recommended_programme) globalCounts.byProgramme[s.recommended_programme] = (globalCounts.byProgramme[s.recommended_programme] || 0) + 1;
+      if (s.area) globalCounts.byArea[s.area] = (globalCounts.byArea[s.area] || 0) + 1;
+      const statusKey = (s.visited_by_current_user || s.visit_status === 'VISITED') ? 'VISITED' : 'NOT_VISITED';
+      globalCounts.byStatus[statusKey] = (globalCounts.byStatus[statusKey] || 0) + 1;
+    });
+
+    // Compute breakdown counts for the current filtered subset
+    const filteredCounts = {
+      total: filteredSchools.length,
+      visited: filteredSchools.filter((s) => s.visited_by_current_user || s.visit_status === 'VISITED').length,
+      unvisited: filteredSchools.filter((s) => !s.visited_by_current_user && s.visit_status !== 'VISITED').length,
+      byBoard: {} as Record<string, number>,
+      byDistrict: {} as Record<string, number>,
+      byType: {} as Record<string, number>,
+      byPriority: {} as Record<string, number>,
+      byProgramme: {} as Record<string, number>,
+      byArea: {} as Record<string, number>,
+    };
+
+    filteredSchools.forEach((s) => {
+      if (s.board) filteredCounts.byBoard[s.board] = (filteredCounts.byBoard[s.board] || 0) + 1;
+      if (s.district) filteredCounts.byDistrict[s.district] = (filteredCounts.byDistrict[s.district] || 0) + 1;
+      if (s.school_type) filteredCounts.byType[s.school_type] = (filteredCounts.byType[s.school_type] || 0) + 1;
+      if (s.priority) filteredCounts.byPriority[s.priority] = (filteredCounts.byPriority[s.priority] || 0) + 1;
+      if (s.recommended_programme) filteredCounts.byProgramme[s.recommended_programme] = (filteredCounts.byProgramme[s.recommended_programme] || 0) + 1;
+      if (s.area) filteredCounts.byArea[s.area] = (filteredCounts.byArea[s.area] || 0) + 1;
+    });
+
     return NextResponse.json({
       schools: filteredSchools,
       totalCount: filteredSchools.length,
       areas: distinctAreas.map((a) => a.area),
       districts: distinctDistricts.map((d) => d.district),
+      globalCounts,
+      filteredCounts,
     });
   } catch (error: any) {
     console.error('Error fetching schools:', error);

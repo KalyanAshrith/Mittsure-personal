@@ -13,6 +13,8 @@ export default function RemainingSchoolsPage() {
   const [selectedArea, setSelectedArea] = useState('ALL');
   const [selectedBoard, setSelectedBoard] = useState('ALL');
   const [selectedPriority, setSelectedPriority] = useState('ALL');
+  const [remainingSortBy, setRemainingSortBy] = useState<'s_no' | 'name' | 'area' | 'priority'>('s_no');
+  const [remainingSortDir, setRemainingSortDir] = useState<'asc' | 'desc'>('asc');
   const [areas, setAreas] = useState<string[]>([]);
   const [selectedSchoolForVisit, setSelectedSchoolForVisit] = useState<SchoolData | null>(null);
 
@@ -79,6 +81,40 @@ export default function RemainingSchoolsPage() {
   };
 
   const prevRepCount = schools.filter(s => s.visited_by_previous_rep).length;
+
+  const boardCounts = React.useMemo(() => {
+    const counts: Record<string, number> = {};
+    schools.forEach((s) => {
+      counts[s.board] = (counts[s.board] || 0) + 1;
+    });
+    return counts;
+  }, [schools]);
+
+  const priorityCounts = React.useMemo(() => {
+    const counts: Record<string, number> = {};
+    schools.forEach((s) => {
+      counts[s.priority] = (counts[s.priority] || 0) + 1;
+    });
+    return counts;
+  }, [schools]);
+
+  const sortedSchools = React.useMemo(() => {
+    const list = [...schools];
+    list.sort((a, b) => {
+      let cmp = 0;
+      if (remainingSortBy === 's_no') {
+        cmp = (a.s_no ?? 0) - (b.s_no ?? 0);
+      } else if (remainingSortBy === 'name') {
+        cmp = (a.school_name || '').localeCompare(b.school_name || '');
+      } else if (remainingSortBy === 'area') {
+        cmp = (a.area || '').localeCompare(b.area || '');
+      } else if (remainingSortBy === 'priority') {
+        cmp = (a.priority || '').localeCompare(b.priority || '');
+      }
+      return remainingSortDir === 'asc' ? cmp : -cmp;
+    });
+    return list;
+  }, [schools, remainingSortBy, remainingSortDir]);
 
   return (
     <div className="space-y-6">
@@ -166,36 +202,79 @@ export default function RemainingSchoolsPage() {
           <select
             value={selectedArea}
             onChange={(e) => setSelectedArea(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs font-bold bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
           >
             <option value="ALL">All Areas ({areas.length})</option>
-            {areas.map(a => (
-              <option key={a} value={a}>{a}</option>
+            {areas.map((a) => (
+              <option key={a} value={a}>
+                {a}
+              </option>
             ))}
           </select>
 
           <select
             value={selectedBoard}
             onChange={(e) => setSelectedBoard(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs font-bold bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
           >
-            <option value="ALL">All Boards</option>
-            <option value="CBSE">CBSE</option>
-            <option value="ICSE">ICSE</option>
-            <option value="STATE BOARD">State Board</option>
-            <option value="OTHER">Other</option>
+            <option value="ALL">All Boards ({schools.length})</option>
+            <option value="STATE BOARD">
+              State Board ({boardCounts['STATE BOARD'] || 0})
+            </option>
+            <option value="CBSE">
+              CBSE ({boardCounts['CBSE'] || 0})
+            </option>
+            <option value="ICSE">
+              ICSE ({boardCounts['ICSE'] || 0})
+            </option>
+            <option value="OTHER">
+              Other ({boardCounts['OTHER'] || 0})
+            </option>
           </select>
 
           <select
             value={selectedPriority}
             onChange={(e) => setSelectedPriority(e.target.value)}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-xs font-bold bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
           >
-            <option value="ALL">All Priorities</option>
-            <option value="HIGH">High Priority</option>
-            <option value="MEDIUM">Medium Priority</option>
+            <option value="ALL">All Priorities ({schools.length})</option>
+            <option value="HIGH">
+              High Priority ({priorityCounts['HIGH'] || 0})
+            </option>
+            <option value="MEDIUM">
+              Medium Priority ({priorityCounts['MEDIUM'] || 0})
+            </option>
             <option value="LOW">Low Priority</option>
           </select>
+        </div>
+
+        {/* Interactive Sort Order & Real-Time Count Indicator */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-slate-500">Sort By:</span>
+            <select
+              value={remainingSortBy}
+              onChange={(e: any) => setRemainingSortBy(e.target.value)}
+              className="px-2.5 py-1.5 border border-slate-200 rounded-lg font-bold text-slate-700 bg-white"
+            >
+              <option value="s_no">S.No (#1..495)</option>
+              <option value="name">School Name (A-Z)</option>
+              <option value="area">Area Cluster</option>
+              <option value="priority">Priority</option>
+            </select>
+            <button
+              onClick={() => setRemainingSortDir((p) => (p === 'asc' ? 'desc' : 'asc'))}
+              className="px-2.5 py-1.5 border border-slate-200 rounded-lg font-bold text-slate-700 bg-white hover:bg-slate-50"
+            >
+              {remainingSortDir === 'asc' ? 'Ascending ↑' : 'Descending ↓'}
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-900 border border-amber-200">
+              Showing {sortedSchools.length} of {schools.length} pending schools
+            </span>
+          </div>
         </div>
       </div>
 
@@ -205,11 +284,11 @@ export default function RemainingSchoolsPage() {
           <div className="flex items-center gap-2">
             <span className="font-semibold text-slate-800 text-sm">Remaining Institutions</span>
             <span className="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full text-xs">
-              {schools.length}
+              {sortedSchools.length}
             </span>
           </div>
           <span className="text-xs text-slate-500">
-            Sorted by Original Allotted S.No (1..487)
+            Sorted by {remainingSortBy.toUpperCase()} ({remainingSortDir === 'asc' ? 'Ascending' : 'Descending'})
           </span>
         </div>
 
@@ -238,7 +317,7 @@ export default function RemainingSchoolsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {schools.map((school) => (
+                {sortedSchools.map((school) => (
                   <tr key={school.id} className="hover:bg-amber-50/30 transition">
                     <td className="py-3.5 px-4 font-mono font-bold text-slate-700">
                       #{school.s_no}

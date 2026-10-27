@@ -13,6 +13,8 @@ export default function CompletedSchoolsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedOutcome, setSelectedOutcome] = useState('ALL');
+  const [completedSortBy, setCompletedSortBy] = useState<'s_no' | 'name' | 'date' | 'visits'>('s_no');
+  const [completedSortDir, setCompletedSortDir] = useState<'asc' | 'desc'>('asc');
   const [selectedSchoolForRevisit, setSelectedSchoolForRevisit] = useState<SchoolData | null>(null);
   const [selectedSchoolForRoute, setSelectedSchoolForRoute] = useState<SchoolData | null>(null);
 
@@ -54,12 +56,49 @@ export default function CompletedSchoolsPage() {
 
   const revisitsCount = totalVisitEvents - schools.length;
 
-  const filteredSchools = selectedOutcome === 'ALL'
-    ? schools
-    : schools.filter(s => {
-        const latestOutcome = s.visits?.[0]?.outcome;
-        return latestOutcome === selectedOutcome;
-      });
+  const outcomeCounts = React.useMemo(() => {
+    const counts: Record<string, number> = {
+      ALL: schools.length,
+      Visited: 0,
+      Revisit: 0,
+      Registered: 0,
+      'Follow-up Required': 0,
+    };
+    schools.forEach((s) => {
+      const outcome = s.visits?.[0]?.outcome || 'Visited';
+      counts[outcome] = (counts[outcome] || 0) + 1;
+    });
+    return counts;
+  }, [schools]);
+
+  const filteredSchools = React.useMemo(() => {
+    const list = selectedOutcome === 'ALL'
+      ? [...schools]
+      : schools.filter((s) => {
+          const latestOutcome = s.visits?.[0]?.outcome;
+          return latestOutcome === selectedOutcome;
+        });
+
+    list.sort((a, b) => {
+      let cmp = 0;
+      if (completedSortBy === 's_no') {
+        cmp = (a.s_no ?? 0) - (b.s_no ?? 0);
+      } else if (completedSortBy === 'name') {
+        cmp = (a.school_name || '').localeCompare(b.school_name || '');
+      } else if (completedSortBy === 'date') {
+        const dateA = a.visits?.[0]?.visit_date ? new Date(a.visits[0].visit_date).getTime() : 0;
+        const dateB = b.visits?.[0]?.visit_date ? new Date(b.visits[0].visit_date).getTime() : 0;
+        cmp = dateA - dateB;
+      } else if (completedSortBy === 'visits') {
+        const vA = (a.visits || []).filter((v: any) => v.is_current_representative).length || 1;
+        const vB = (b.visits || []).filter((v: any) => v.is_current_representative).length || 1;
+        cmp = vA - vB;
+      }
+      return completedSortDir === 'asc' ? cmp : -cmp;
+    });
+
+    return list;
+  }, [schools, selectedOutcome, completedSortBy, completedSortDir]);
 
   const handleExportCSV = () => {
     if (schools.length === 0) return;
@@ -198,26 +237,54 @@ export default function CompletedSchoolsPage() {
           </svg>
         </div>
 
-        <div className="flex items-center gap-2 w-full md:w-auto">
-          <span className="text-xs font-medium text-slate-600">Filter Outcome:</span>
-          <select
-            value={selectedOutcome}
-            onChange={(e) => setSelectedOutcome(e.target.value)}
-            className="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-          >
-            <option value="ALL">All Visits</option>
-            <option value="Visited">Initial Visit</option>
-            <option value="Revisit">Revisit</option>
-            <option value="Registered">Registered (When Confirmed by You)</option>
-            <option value="Follow-up Required">Follow-up Required</option>
-          </select>
+        <div className="flex items-center gap-3 w-full md:w-auto flex-wrap">
+          {/* Outcome Filter with Counts */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-bold text-slate-600">Outcome:</span>
+            <select
+              value={selectedOutcome}
+              onChange={(e) => setSelectedOutcome(e.target.value)}
+              className="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-bold bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-xs"
+            >
+              <option value="ALL">All Visits ({outcomeCounts.ALL})</option>
+              <option value="Visited">Initial Visit ({outcomeCounts.Visited})</option>
+              <option value="Revisit">Revisit ({outcomeCounts.Revisit})</option>
+              <option value="Registered">Registered ({outcomeCounts.Registered})</option>
+              <option value="Follow-up Required">Follow-up ({outcomeCounts['Follow-up Required']})</option>
+            </select>
+          </div>
+
+          {/* Sort Selector */}
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs font-bold text-slate-600">Sort:</span>
+            <select
+              value={completedSortBy}
+              onChange={(e: any) => setCompletedSortBy(e.target.value)}
+              className="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-bold bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-xs"
+            >
+              <option value="s_no">S.No (#1..495)</option>
+              <option value="name">School Name (A-Z)</option>
+              <option value="date">Latest Visit Date</option>
+              <option value="visits">Total Visits Count</option>
+            </select>
+
+            <button
+              onClick={() => setCompletedSortDir((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+              className="px-2.5 py-1.5 rounded-lg border border-slate-200 text-xs font-bold bg-white hover:bg-slate-50 transition"
+              title="Toggle sort direction"
+            >
+              {completedSortDir === 'asc' ? 'Asc ↑' : 'Desc ↓'}
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Table */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="px-5 py-3.5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-          <span className="font-semibold text-slate-800 text-sm">Personally Completed Directory ({filteredSchools.length})</span>
+          <span className="font-semibold text-slate-800 text-sm">
+            Personally Completed Directory ({filteredSchools.length} of {schools.length})
+          </span>
           <span className="text-xs text-slate-500">Representative: Nichhenametla Kalyan Ashrith</span>
         </div>
 
@@ -235,10 +302,34 @@ export default function CompletedSchoolsPage() {
             <table className="w-full text-left border-collapse text-sm">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50/70 text-xs font-semibold text-slate-600 uppercase tracking-wider">
-                  <th className="py-3 px-4 w-16">S.No</th>
-                  <th className="py-3 px-4">School Name & Area</th>
+                  <th
+                    className="py-3 px-4 w-16 cursor-pointer hover:text-emerald-700"
+                    onClick={() => {
+                      if (completedSortBy === 's_no') setCompletedSortDir((p) => (p === 'asc' ? 'desc' : 'asc'));
+                      else { setCompletedSortBy('s_no'); setCompletedSortDir('asc'); }
+                    }}
+                  >
+                    S.No {completedSortBy === 's_no' && (completedSortDir === 'asc' ? '↑' : '↓')}
+                  </th>
+                  <th
+                    className="py-3 px-4 cursor-pointer hover:text-emerald-700"
+                    onClick={() => {
+                      if (completedSortBy === 'name') setCompletedSortDir((p) => (p === 'asc' ? 'desc' : 'asc'));
+                      else { setCompletedSortBy('name'); setCompletedSortDir('asc'); }
+                    }}
+                  >
+                    School Name & Area {completedSortBy === 'name' && (completedSortDir === 'asc' ? '↑' : '↓')}
+                  </th>
                   <th className="py-3 px-4">Board / Type</th>
-                  <th className="py-3 px-4">Latest Visit Date</th>
+                  <th
+                    className="py-3 px-4 cursor-pointer hover:text-emerald-700"
+                    onClick={() => {
+                      if (completedSortBy === 'date') setCompletedSortDir((p) => (p === 'asc' ? 'desc' : 'asc'));
+                      else { setCompletedSortBy('date'); setCompletedSortDir('desc'); }
+                    }}
+                  >
+                    Latest Visit Date {completedSortBy === 'date' && (completedSortDir === 'asc' ? '↑' : '↓')}
+                  </th>
                   <th className="py-3 px-4">Visits Count</th>
                   <th className="py-3 px-4">Latest Outcome</th>
                   <th className="py-3 px-4 text-right">Actions</th>

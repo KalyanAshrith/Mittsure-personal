@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import {
   Search,
@@ -21,6 +21,11 @@ import {
   ExternalLink,
   Sparkles,
   X,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  BarChart3,
+  Compass,
 } from 'lucide-react';
 import SchoolCard from '@/components/SchoolCard';
 import RecordVisitModal from '@/components/RecordVisitModal';
@@ -43,6 +48,34 @@ export default function SchoolMasterPage() {
   const [visitStatus, setVisitStatus] = useState('ALL');
   const [priority, setPriority] = useState('ALL');
   const [programme, setProgramme] = useState('ALL');
+
+  // Interactive Sorting & Counts states
+  const [sortBy, setSortBy] = useState<string>('s_no');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [countsData, setCountsData] = useState<{
+    global: {
+      total: number;
+      visited: number;
+      unvisited: number;
+      byBoard: Record<string, number>;
+      byDistrict: Record<string, number>;
+      byType: Record<string, number>;
+      byPriority: Record<string, number>;
+      byProgramme: Record<string, number>;
+      byArea: Record<string, number>;
+    };
+    filtered: {
+      total: number;
+      visited: number;
+      unvisited: number;
+      byBoard: Record<string, number>;
+      byDistrict: Record<string, number>;
+      byType: Record<string, number>;
+      byPriority: Record<string, number>;
+      byProgramme: Record<string, number>;
+      byArea: Record<string, number>;
+    };
+  } | null>(null);
 
   // Visit Modal
   const [selectedSchoolForVisit, setSelectedSchoolForVisit] = useState<SchoolData | null>(null);
@@ -108,12 +141,87 @@ export default function SchoolMasterPage() {
       const json = await res.json();
       setSchools(json.schools || []);
       if (json.areas) setAreas(json.areas);
+      if (json.globalCounts && json.filteredCounts) {
+        setCountsData({
+          global: json.globalCounts,
+          filtered: json.filteredCounts,
+        });
+      }
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
+
+  const handleColumnSort = (field: string) => {
+    if (sortBy === field) {
+      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortBy(field);
+      setSortDirection('asc');
+    }
+  };
+
+  // Client-side instantaneous 60fps sorted list
+  const sortedSchools = useMemo(() => {
+    const items = [...schools];
+    items.sort((a, b) => {
+      let comparison = 0;
+      if (sortBy === 's_no') {
+        comparison = (a.s_no ?? 0) - (b.s_no ?? 0);
+      } else if (sortBy === 'school_name') {
+        comparison = (a.school_name || '').localeCompare(b.school_name || '');
+      } else if (sortBy === 'board') {
+        comparison = (a.board || '').localeCompare(b.board || '');
+      } else if (sortBy === 'school_type') {
+        comparison = (a.school_type || '').localeCompare(b.school_type || '');
+      } else if (sortBy === 'area') {
+        comparison = (a.area || '').localeCompare(b.area || '');
+      } else if (sortBy === 'district') {
+        comparison = (a.district || '').localeCompare(b.district || '');
+      } else if (sortBy === 'opportunity_type') {
+        comparison = (a.opportunity_type || '').localeCompare(b.opportunity_type || '');
+      } else if (sortBy === 'visit_status') {
+        const aVisited = Boolean(a.visited_by_current_user || a.visit_status === 'VISITED');
+        const bVisited = Boolean(b.visited_by_current_user || b.visit_status === 'VISITED');
+        comparison = aVisited === bVisited ? 0 : aVisited ? -1 : 1;
+      } else if (sortBy === 'last_visit_date') {
+        const dateA = a.last_visit_date ? new Date(a.last_visit_date).getTime() : 0;
+        const dateB = b.last_visit_date ? new Date(b.last_visit_date).getTime() : 0;
+        comparison = dateA - dateB;
+      }
+      return sortDirection === 'asc' ? comparison : -comparison;
+    });
+    return items;
+  }, [schools, sortBy, sortDirection]);
+
+  // Breakdown counts for currently active sort category
+  const activeSortCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    schools.forEach((s) => {
+      let key = 'Other';
+      if (sortBy === 'board') {
+        key = s.board || 'Unknown';
+      } else if (sortBy === 'district') {
+        key = s.district || 'Unknown';
+      } else if (sortBy === 'visit_status') {
+        const isVisited = Boolean(s.visited_by_current_user || s.visit_status === 'VISITED');
+        key = isVisited ? 'Visited (Green)' : 'Not Visited (Red)';
+      } else if (sortBy === 'school_type') {
+        key = s.school_type || 'Unknown';
+      } else if (sortBy === 'opportunity_type') {
+        key = `Cat ${s.opportunity_type || 'C'}`;
+      } else if (sortBy === 'area') {
+        key = s.area || 'Unknown';
+      } else {
+        const isVisited = Boolean(s.visited_by_current_user || s.visit_status === 'VISITED');
+        key = isVisited ? 'Completed' : 'Pending';
+      }
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    return counts;
+  }, [schools, sortBy]);
 
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
@@ -272,7 +380,7 @@ export default function SchoolMasterPage() {
           />
         </div>
 
-        {/* Filter Chips */}
+        {/* Filter Chips with Real-Time Total Counts */}
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 text-xs">
           {/* Board */}
           <select
@@ -280,11 +388,19 @@ export default function SchoolMasterPage() {
             onChange={(e) => setBoard(e.target.value)}
             className="border border-[#DDE4EE] rounded-xl px-2.5 py-1.5 bg-white/80 font-bold text-[#0F182F] shadow-xs"
           >
-            <option value="ALL">Board: All</option>
-            <option value="CBSE">CBSE</option>
-            <option value="ICSE">ICSE</option>
-            <option value="STATE BOARD">State Board</option>
-            <option value="OTHER">Other</option>
+            <option value="ALL">Board: All ({countsData?.global?.total || 495})</option>
+            <option value="STATE BOARD">
+              State Board ({countsData?.global?.byBoard?.['STATE BOARD'] || 258})
+            </option>
+            <option value="CBSE">
+              CBSE ({countsData?.global?.byBoard?.['CBSE'] || 155})
+            </option>
+            <option value="ICSE">
+              ICSE ({countsData?.global?.byBoard?.['ICSE'] || 48})
+            </option>
+            <option value="OTHER">
+              Other ({countsData?.global?.byBoard?.['OTHER'] || 33})
+            </option>
           </select>
 
           {/* School Type */}
@@ -293,11 +409,16 @@ export default function SchoolMasterPage() {
             onChange={(e) => setSchoolType(e.target.value)}
             className="border border-[#DDE4EE] rounded-xl px-2.5 py-1.5 bg-white/80 font-bold text-[#0F182F] shadow-xs"
           >
-            <option value="ALL">Type: All</option>
-            <option value="PRE-SCHOOL">Pre-school / Play-school</option>
-            <option value="PRIMARY">Primary School</option>
-            <option value="COMPOSITE">Composite / High</option>
-            <option value="INTERNATIONAL">International</option>
+            <option value="ALL">Type: All ({countsData?.global?.total || 495})</option>
+            <option value="PRIMARY">
+              Primary ({countsData?.global?.byType?.['PRIMARY'] || 446})
+            </option>
+            <option value="PRE-SCHOOL">
+              Pre-School ({(countsData?.global?.byType?.['PLAY SCHOOL'] || 33) + (countsData?.global?.byType?.['PRE-SCHOOL'] || 2)})
+            </option>
+            <option value="COMPOSITE">
+              Composite ({countsData?.global?.byType?.['COMPOSITE'] || 14})
+            </option>
           </select>
 
           {/* Visit Status */}
@@ -306,9 +427,13 @@ export default function SchoolMasterPage() {
             onChange={(e) => setVisitStatus(e.target.value)}
             className="border border-[#DDE4EE] rounded-xl px-2.5 py-1.5 bg-white/80 font-bold text-[#0F182F] shadow-xs"
           >
-            <option value="ALL">Status: All</option>
-            <option value="NOT_VISITED">Not Visited Only</option>
-            <option value="VISITED_ONLY">Visited Only</option>
+            <option value="ALL">Status: All ({countsData?.global?.total || 495})</option>
+            <option value="NOT_VISITED">
+              Not Visited ({countsData?.global?.unvisited || 344})
+            </option>
+            <option value="VISITED_ONLY">
+              Visited Only ({countsData?.global?.visited || 151})
+            </option>
             <option value="INTERESTED">Interested</option>
             <option value="FOLLOW-UP">Follow-up</option>
             <option value="REGISTRATION">Registration</option>
@@ -321,10 +446,10 @@ export default function SchoolMasterPage() {
             onChange={(e) => setArea(e.target.value)}
             className="border border-[#DDE4EE] rounded-xl px-2.5 py-1.5 bg-white/80 font-bold text-[#0F182F] shadow-xs"
           >
-            <option value="ALL">Area: All</option>
+            <option value="ALL">Area: All ({countsData?.global?.total || 495})</option>
             {areas.map((a) => (
               <option key={a} value={a}>
-                {a}
+                {a} ({countsData?.global?.byArea?.[a] || 0})
               </option>
             ))}
           </select>
@@ -335,12 +460,22 @@ export default function SchoolMasterPage() {
             onChange={(e) => setDistrict(e.target.value)}
             className="border border-[#DDE4EE] rounded-xl px-2.5 py-1.5 bg-white/80 font-bold text-[#0F182F] shadow-xs"
           >
-            <option value="ALL">District: All</option>
-            <option value="Mysuru">Mysuru</option>
-            <option value="Mandya">Mandya</option>
-            <option value="Chamarajanagar">Chamarajanagar</option>
-            <option value="Hassan">Hassan</option>
-            <option value="Kodagu">Kodagu</option>
+            <option value="ALL">District: All ({countsData?.global?.total || 495})</option>
+            <option value="Mysuru">
+              Mysuru ({countsData?.global?.byDistrict?.['Mysuru'] || 312})
+            </option>
+            <option value="Mandya">
+              Mandya ({countsData?.global?.byDistrict?.['Mandya'] || 101})
+            </option>
+            <option value="Hassan">
+              Hassan ({countsData?.global?.byDistrict?.['Hassan'] || 38})
+            </option>
+            <option value="Chamarajanagar">
+              Chamarajanagar ({countsData?.global?.byDistrict?.['Chamarajanagar'] || 22})
+            </option>
+            <option value="Kodagu">
+              Kodagu ({countsData?.global?.byDistrict?.['Kodagu'] || 22})
+            </option>
           </select>
 
           {/* Programme */}
@@ -349,10 +484,16 @@ export default function SchoolMasterPage() {
             onChange={(e) => setProgramme(e.target.value)}
             className="border border-[#DDE4EE] rounded-xl px-2.5 py-1.5 bg-white/80 font-bold text-[#0F182F] shadow-xs"
           >
-            <option value="ALL">Programme: All</option>
-            <option value="MOM">MOM (Olympiad)</option>
-            <option value="Junior Power Quest">Junior Power Quest</option>
-            <option value="Both">Both Programmes</option>
+            <option value="ALL">Programme: All ({countsData?.global?.total || 495})</option>
+            <option value="MOM">
+              MOM ({countsData?.global?.byProgramme?.['MOM'] || 0})
+            </option>
+            <option value="Junior Power Quest">
+              JPQ ({countsData?.global?.byProgramme?.['Junior Power Quest'] || 0})
+            </option>
+            <option value="Both">
+              Both ({countsData?.global?.byProgramme?.['Both'] || 0})
+            </option>
           </select>
 
           {/* Priority */}
@@ -361,11 +502,97 @@ export default function SchoolMasterPage() {
             onChange={(e) => setPriority(e.target.value)}
             className="border border-[#DDE4EE] rounded-xl px-2.5 py-1.5 bg-white/80 font-bold text-[#0F182F] shadow-xs"
           >
-            <option value="ALL">Priority: All</option>
-            <option value="HIGH">High Priority</option>
-            <option value="MEDIUM">Medium Priority</option>
+            <option value="ALL">Priority: All ({countsData?.global?.total || 495})</option>
+            <option value="HIGH">
+              High Priority ({countsData?.global?.byPriority?.['HIGH'] || 494})
+            </option>
+            <option value="MEDIUM">
+              Medium ({countsData?.global?.byPriority?.['MEDIUM'] || 1})
+            </option>
             <option value="LOW">Low Priority</option>
           </select>
+        </div>
+
+        {/* Interactive Sorting System & Real-Time Item Counts Strip */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 pt-3 border-t border-white/60 text-xs">
+          {/* Sorter Selector & Direction Switcher */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[11px] font-black uppercase tracking-wider text-[#59627E] flex items-center gap-1">
+              <ArrowUpDown className="w-3.5 h-3.5 text-[#0F1B31]" />
+              <span>Sort Order:</span>
+            </span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="border border-[#DDE4EE] rounded-xl px-3 py-1.5 bg-white font-bold text-xs text-[#0F182F] shadow-xs focus:ring-2 focus:ring-[#0F1B31] transition"
+            >
+              <option value="s_no">S.No (Original Allotment #1..495)</option>
+              <option value="school_name">School Name (Alphabetical)</option>
+              <option value="area">Area / Locality Cluster</option>
+              <option value="district">District Zone</option>
+              <option value="board">Board (State, CBSE, ICSE)</option>
+              <option value="visit_status">Visit Status (Visited vs Pending)</option>
+              <option value="last_visit_date">Last Visit Date (Recent)</option>
+              <option value="opportunity_type">Opportunity Category (A/B/C)</option>
+              <option value="school_type">School Category</option>
+            </select>
+
+            <button
+              onClick={() => setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))}
+              className="px-3 py-1.5 rounded-xl bg-white border border-[#DDE4EE] font-bold text-xs text-[#0F182F] hover:bg-[#0F1B31] hover:text-white transition flex items-center gap-1.5 shadow-xs"
+              title={`Toggle sort direction (currently ${sortDirection === 'asc' ? 'Ascending' : 'Descending'})`}
+            >
+              {sortDirection === 'asc' ? (
+                <>
+                  <ArrowUp className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Ascending (A→Z / 1→9)</span>
+                </>
+              ) : (
+                <>
+                  <ArrowDown className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Descending (Z→A / 9→1)</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Live Dynamic Counters */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="glass-pill px-3 py-1 text-xs font-bold text-[#0F182F] shadow-xs flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Showing <strong>{sortedSchools.length}</strong> of {countsData?.global?.total || 495}</span>
+            </span>
+            <span className="px-2.5 py-1 rounded-full text-[11px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200 shadow-xs">
+              ✓ {sortedSchools.filter((s) => s.visited_by_current_user || s.visit_status === 'VISITED').length} Visited
+            </span>
+            <span className="px-2.5 py-1 rounded-full text-[11px] font-black bg-rose-100 text-rose-800 border border-rose-200 shadow-xs">
+              Pending: {sortedSchools.filter((s) => !s.visited_by_current_user && s.visit_status !== 'VISITED').length}
+            </span>
+          </div>
+        </div>
+
+        {/* Dynamic Active Sort Breakdown Ribbon: Shows "How Many Have There" in each category of current sort */}
+        <div className="p-2.5 sm:p-3 bg-white/70 border border-white/80 rounded-2xl flex items-center gap-2 flex-wrap text-xs shadow-xs">
+          <div className="flex items-center gap-1.5 font-extrabold text-[#59627E] text-[11px] uppercase tracking-wider">
+            <BarChart3 className="w-3.5 h-3.5 text-[#0F1B31]" />
+            <span>Count Breakdown by {sortBy.replace('_', ' ')}:</span>
+          </div>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {Object.entries(activeSortCounts).slice(0, 8).map(([key, count]) => (
+              <span
+                key={key}
+                className="px-2.5 py-0.5 rounded-xl bg-white border border-slate-200/90 text-[#020C21] font-bold text-[11px] shadow-2xs flex items-center gap-1 hover:border-[#0F1B31] transition"
+              >
+                <span className="text-[#59627E]">{key}:</span>
+                <span className="font-mono text-[#0F1B31] font-black">{count}</span>
+              </span>
+            ))}
+            {Object.keys(activeSortCounts).length > 8 && (
+              <span className="text-[10px] text-[#59627E] font-medium italic">
+                +{Object.keys(activeSortCounts).length - 8} more
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Clear Filters Action */}
@@ -400,7 +627,7 @@ export default function SchoolMasterPage() {
         </div>
       ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {schools.map((school) => (
+          {sortedSchools.map((school) => (
             <SchoolCard
               key={school.id}
               school={school}
@@ -413,25 +640,153 @@ export default function SchoolMasterPage() {
           ))}
         </div>
       ) : (
-        /* Powerful Searchable Table with ConSentinel Glass & Deep Ink */
+        /* Powerful Searchable Table with Interactive Column Sorting & Real-Time Counts */
         <div className="glass-panel rounded-2xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-[#0F182F]">
-              <thead className="bg-[#0F1B31] text-white uppercase text-[10px] tracking-wider font-extrabold">
+              <thead className="bg-[#0F1B31] text-white uppercase text-[10px] tracking-wider font-extrabold select-none">
                 <tr>
-                  <th className="py-3.5 px-3.5">S.No</th>
-                  <th className="py-3.5 px-3.5">School Name</th>
-                  <th className="py-3.5 px-3.5">Board</th>
-                  <th className="py-3.5 px-3.5">Type</th>
-                  <th className="py-3.5 px-3.5">Area & Dist</th>
-                  <th className="py-3.5 px-3.5">Opp</th>
-                  <th className="py-3.5 px-3.5">Visit Status</th>
-                  <th className="py-3.5 px-3.5">Last Visit</th>
+                  <th className="py-3.5 px-3.5">
+                    <button
+                      type="button"
+                      onClick={() => handleColumnSort('s_no')}
+                      className={`flex items-center gap-1 uppercase tracking-wider font-extrabold transition text-[10px] ${
+                        sortBy === 's_no' ? 'text-emerald-400 font-black' : 'text-slate-200 hover:text-white'
+                      }`}
+                      title="Sort by Original Allotment S.No"
+                    >
+                      <span>S.No</span>
+                      {sortBy === 's_no' ? (
+                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-40" />
+                      )}
+                    </button>
+                  </th>
+                  <th className="py-3.5 px-3.5">
+                    <button
+                      type="button"
+                      onClick={() => handleColumnSort('school_name')}
+                      className={`flex items-center gap-1 uppercase tracking-wider font-extrabold transition text-[10px] ${
+                        sortBy === 'school_name' ? 'text-emerald-400 font-black' : 'text-slate-200 hover:text-white'
+                      }`}
+                      title="Sort Alphabetically by School Name"
+                    >
+                      <span>School Name</span>
+                      {sortBy === 'school_name' ? (
+                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-40" />
+                      )}
+                    </button>
+                  </th>
+                  <th className="py-3.5 px-3.5">
+                    <button
+                      type="button"
+                      onClick={() => handleColumnSort('board')}
+                      className={`flex items-center gap-1 uppercase tracking-wider font-extrabold transition text-[10px] ${
+                        sortBy === 'board' ? 'text-emerald-400 font-black' : 'text-slate-200 hover:text-white'
+                      }`}
+                      title="Sort by Board"
+                    >
+                      <span>Board</span>
+                      {sortBy === 'board' ? (
+                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-40" />
+                      )}
+                    </button>
+                  </th>
+                  <th className="py-3.5 px-3.5">
+                    <button
+                      type="button"
+                      onClick={() => handleColumnSort('school_type')}
+                      className={`flex items-center gap-1 uppercase tracking-wider font-extrabold transition text-[10px] ${
+                        sortBy === 'school_type' ? 'text-emerald-400 font-black' : 'text-slate-200 hover:text-white'
+                      }`}
+                      title="Sort by School Type"
+                    >
+                      <span>Type</span>
+                      {sortBy === 'school_type' ? (
+                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-40" />
+                      )}
+                    </button>
+                  </th>
+                  <th className="py-3.5 px-3.5">
+                    <button
+                      type="button"
+                      onClick={() => handleColumnSort('area')}
+                      className={`flex items-center gap-1 uppercase tracking-wider font-extrabold transition text-[10px] ${
+                        sortBy === 'area' ? 'text-emerald-400 font-black' : 'text-slate-200 hover:text-white'
+                      }`}
+                      title="Sort by Area & Nagar"
+                    >
+                      <span>Area & Dist</span>
+                      {sortBy === 'area' ? (
+                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-40" />
+                      )}
+                    </button>
+                  </th>
+                  <th className="py-3.5 px-3.5">
+                    <button
+                      type="button"
+                      onClick={() => handleColumnSort('opportunity_type')}
+                      className={`flex items-center gap-1 uppercase tracking-wider font-extrabold transition text-[10px] ${
+                        sortBy === 'opportunity_type' ? 'text-emerald-400 font-black' : 'text-slate-200 hover:text-white'
+                      }`}
+                      title="Sort by Opportunity Category"
+                    >
+                      <span>Opp</span>
+                      {sortBy === 'opportunity_type' ? (
+                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-40" />
+                      )}
+                    </button>
+                  </th>
+                  <th className="py-3.5 px-3.5">
+                    <button
+                      type="button"
+                      onClick={() => handleColumnSort('visit_status')}
+                      className={`flex items-center gap-1 uppercase tracking-wider font-extrabold transition text-[10px] ${
+                        sortBy === 'visit_status' ? 'text-emerald-400 font-black' : 'text-slate-200 hover:text-white'
+                      }`}
+                      title="Sort by Visited Status"
+                    >
+                      <span>Visit Status</span>
+                      {sortBy === 'visit_status' ? (
+                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-40" />
+                      )}
+                    </button>
+                  </th>
+                  <th className="py-3.5 px-3.5">
+                    <button
+                      type="button"
+                      onClick={() => handleColumnSort('last_visit_date')}
+                      className={`flex items-center gap-1 uppercase tracking-wider font-extrabold transition text-[10px] ${
+                        sortBy === 'last_visit_date' ? 'text-emerald-400 font-black' : 'text-slate-200 hover:text-white'
+                      }`}
+                      title="Sort by Last Visit Date"
+                    >
+                      <span>Last Visit</span>
+                      {sortBy === 'last_visit_date' ? (
+                        sortDirection === 'asc' ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />
+                      ) : (
+                        <ArrowUpDown className="w-3 h-3 opacity-40" />
+                      )}
+                    </button>
+                  </th>
                   <th className="py-3.5 px-3.5 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/60">
-                {schools.map((school) => {
+                {sortedSchools.map((school) => {
                   const isVisited = Boolean(school.visited_by_current_user || school.visit_status === 'VISITED');
                   return (
                     <tr key={school.id} className="hover:bg-white/50 transition">

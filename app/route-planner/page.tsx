@@ -201,6 +201,51 @@ export default function RoutePlannerPage() {
     return counts;
   }, [allSchools]);
 
+  const boardCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const s of allSchools) {
+      if (s.board) counts[s.board] = (counts[s.board] || 0) + 1;
+    }
+    return counts;
+  }, [allSchools]);
+
+  const typeCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const s of allSchools) {
+      if (s.school_type) counts[s.school_type] = (counts[s.school_type] || 0) + 1;
+    }
+    return counts;
+  }, [allSchools]);
+
+  const visitCounts = useMemo(() => {
+    let visited = 0;
+    let unvisited = 0;
+    for (const s of allSchools) {
+      if (s.visited_by_current_user || s.visit_status === 'VISITED') visited++;
+      else unvisited++;
+    }
+    return { visited, unvisited };
+  }, [allSchools]);
+
+  const [candidateSortBy, setCandidateSortBy] = useState<'score' | 'distance' | 's_no' | 'name'>('score');
+
+  const sortedCandidates = useMemo(() => {
+    const list = [...candidates];
+    list.sort((a, b) => {
+      if (candidateSortBy === 'score') {
+        return (b.recommendationScore ?? 0) - (a.recommendationScore ?? 0);
+      } else if (candidateSortBy === 'distance') {
+        return (a.distanceFromBaseKm ?? 0) - (b.distanceFromBaseKm ?? 0);
+      } else if (candidateSortBy === 's_no') {
+        return (a.s_no ?? 0) - (b.s_no ?? 0);
+      } else if (candidateSortBy === 'name') {
+        return (a.school_name || '').localeCompare(b.school_name || '');
+      }
+      return 0;
+    });
+    return list;
+  }, [candidates, candidateSortBy]);
+
   // Base Location (Default user PG Bogadi 2nd Stage)
   const [baseAddress, setBaseAddress] = useState(
     '661, Sahukar Chennaiah Road, Janatha Nagar, Bogadi 2nd Stage, TK Layout, Mysuru 570009'
@@ -1353,10 +1398,10 @@ export default function RoutePlannerPage() {
               onChange={(e) => setBoardFilter(e.target.value)}
               className="border border-[#DDE4EE] bg-white/80 rounded-xl p-2 font-semibold text-[#0F182F] shadow-xs"
             >
-              <option value="ALL">Board: All</option>
-              <option value="STATE BOARD">State Board</option>
-              <option value="CBSE">CBSE</option>
-              <option value="ICSE">ICSE</option>
+              <option value="ALL">Board: All ({allSchools.length})</option>
+              <option value="STATE BOARD">State Board ({boardCounts['STATE BOARD'] || 0})</option>
+              <option value="CBSE">CBSE ({boardCounts['CBSE'] || 0})</option>
+              <option value="ICSE">ICSE ({boardCounts['ICSE'] || 0})</option>
             </select>
 
             <select
@@ -1364,13 +1409,13 @@ export default function RoutePlannerPage() {
               onChange={(e) => setTypeFilter(e.target.value)}
               className="border border-[#DDE4EE] bg-white/80 rounded-xl p-2 font-semibold text-[#0F182F] shadow-xs"
             >
-              <option value="ALL">Category: All</option>
+              <option value="ALL">Category: All ({allSchools.length})</option>
               <option value="SMALL_AND_EARLY_YEARS">
                 ★ Small & Early Years
               </option>
-              <option value="PRE-SCHOOL">Pre-School Only</option>
-              <option value="PRIMARY">Primary School</option>
-              <option value="COMPOSITE">Composite School</option>
+              <option value="PRE-SCHOOL">Pre-School Only ({(typeCounts['PRE-SCHOOL'] || 0) + (typeCounts['PLAY SCHOOL'] || 0)})</option>
+              <option value="PRIMARY">Primary School ({typeCounts['PRIMARY'] || 0})</option>
+              <option value="COMPOSITE">Composite School ({typeCounts['COMPOSITE'] || 0})</option>
             </select>
 
             <select
@@ -1378,9 +1423,9 @@ export default function RoutePlannerPage() {
               onChange={(e) => setVisitFilter(e.target.value)}
               className="border border-[#DDE4EE] bg-white/80 rounded-xl p-2 font-semibold text-[#0F182F] shadow-xs"
             >
-              <option value="NOT_VISITED">Unvisited Only (Red)</option>
-              <option value="ALL">All Statuses</option>
-              <option value="REVISIT_ONLY">Revisits Only</option>
+              <option value="NOT_VISITED">Unvisited Only ({visitCounts.unvisited})</option>
+              <option value="ALL">All Statuses ({allSchools.length})</option>
+              <option value="REVISIT_ONLY">Revisits Only ({visitCounts.visited})</option>
               <option value="FOLLOW_UP_ONLY">Follow-ups Only</option>
             </select>
           </div>
@@ -1542,9 +1587,30 @@ export default function RoutePlannerPage() {
                 </div>
               )}
 
+              {/* Candidate Sorter & Live Count Breakdown */}
+              <div className="flex items-center justify-between gap-2 p-2 bg-white/70 border border-white/80 rounded-2xl text-[11px] shadow-xs">
+                <div className="flex items-center gap-1.5 font-bold text-[#59627E]">
+                  <span>Sort Pool:</span>
+                  <select
+                    value={candidateSortBy}
+                    onChange={(e: any) => setCandidateSortBy(e.target.value)}
+                    className="bg-white border border-[#DDE4EE] rounded-lg px-2 py-0.5 text-[11px] font-extrabold text-[#0F182F]"
+                  >
+                    <option value="score">100pt Recommendation Score</option>
+                    <option value="distance">Distance from Start Base</option>
+                    <option value="s_no">S.No (#1..495)</option>
+                    <option value="name">School Name (A-Z)</option>
+                  </select>
+                </div>
+
+                <span className="font-mono font-black text-[#0F1B31] text-[10px] bg-slate-100 px-2.5 py-0.5 rounded-full border border-slate-200">
+                  {candidates.length} in Pool ({sortedCandidates.filter((c) => isStateOrPreSchool(c)).length} State/Pre, {sortedCandidates.filter((c) => isCbseOrIcseSchool(c)).length} CBSE/ICSE)
+                </span>
+              </div>
+
               {/* Candidate List Scroll */}
               <div className="space-y-2.5 max-h-[640px] overflow-y-auto pr-1">
-                {candidates.slice(0, 30).map((candidate) => {
+                {sortedCandidates.slice(0, 35).map((candidate) => {
                   const isSelected = selectedSchoolIds.includes(candidate.id);
                   const isVisited = candidate.visited_by_current_user || candidate.visit_status === 'VISITED';
                   const verifiedProduct = getVerifiedProductRecommendation(candidate);
