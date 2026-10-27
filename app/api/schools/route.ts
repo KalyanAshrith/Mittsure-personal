@@ -74,27 +74,43 @@ export async function GET(request: NextRequest) {
 
     const personallyVisited = searchParams.get('personallyVisited');
     const previousRepVisited = searchParams.get('previousRepVisited');
+    const repName = searchParams.get('repName')?.trim() || '';
+    const isLeadKalyan =
+      !repName || repName.toLowerCase().includes('kalyan') || repName.toLowerCase().includes('ashrith');
 
-    if (personallyVisited === 'true') {
-      where.visited_by_current_user = true;
-    } else if (personallyVisited === 'false') {
-      where.visited_by_current_user = false;
+    if (isLeadKalyan) {
+      if (personallyVisited === 'true') {
+        where.visited_by_current_user = true;
+      } else if (personallyVisited === 'false') {
+        where.visited_by_current_user = false;
+      }
+
+      if (visitStatus !== 'ALL') {
+        if (visitStatus === 'NOT_VISITED' || visitStatus === 'PERSONALLY_NOT_VISITED') {
+          where.visited_by_current_user = false;
+        } else if (visitStatus === 'PERSONALLY_COMPLETED' || visitStatus === 'VISITED_ONLY') {
+          where.visited_by_current_user = true;
+        } else if (visitStatus === 'PREVIOUS_REP_VISITED') {
+          where.visited_by_previous_rep = true;
+        } else {
+          where.visit_status = visitStatus;
+        }
+      }
+    } else {
+      // For personal team members, isolate visited state to visits by their name
+      if (personallyVisited === 'true' || visitStatus === 'VISITED_ONLY' || visitStatus === 'PERSONALLY_COMPLETED') {
+        where.visits = {
+          some: { representative: repName },
+        };
+      } else if (personallyVisited === 'false' || visitStatus === 'NOT_VISITED' || visitStatus === 'PERSONALLY_NOT_VISITED') {
+        where.visits = {
+          none: { representative: repName },
+        };
+      }
     }
 
     if (previousRepVisited === 'true') {
       where.visited_by_previous_rep = true;
-    }
-
-    if (visitStatus !== 'ALL') {
-      if (visitStatus === 'NOT_VISITED' || visitStatus === 'PERSONALLY_NOT_VISITED') {
-        where.visited_by_current_user = false;
-      } else if (visitStatus === 'PERSONALLY_COMPLETED' || visitStatus === 'VISITED_ONLY') {
-        where.visited_by_current_user = true;
-      } else if (visitStatus === 'PREVIOUS_REP_VISITED') {
-        where.visited_by_previous_rep = true;
-      } else {
-        where.visit_status = visitStatus;
-      }
     }
 
     if (priority !== 'ALL') {
@@ -127,12 +143,18 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // Compute distance from base
+    // Compute distance from base and personal visit isolation
     const schoolsWithDist = schools.map((s) => {
       const dist = calculateDistanceKm(baseLat, baseLng, s.latitude, s.longitude);
+      const isPersonallyVisited = isLeadKalyan
+        ? s.visited_by_current_user
+        : s.visits.some((v: any) => v.representative?.toLowerCase() === repName.toLowerCase());
+
       return {
         ...s,
         distance_from_base_km: dist,
+        visited_by_current_user: isPersonallyVisited,
+        visit_status: isPersonallyVisited ? 'VISITED' : (isLeadKalyan ? s.visit_status : 'NOT VISITED'),
       };
     });
 

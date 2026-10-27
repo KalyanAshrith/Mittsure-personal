@@ -11,11 +11,23 @@ import {
   Sparkles,
   MapPin,
   Bike,
+  User,
+  RotateCcw,
 } from 'lucide-react';
+import { getActiveUser, subscribeToUserChange, resetToLeadUser, ActiveUser } from '@/lib/activeUser';
 
 export default function Header() {
   const [isOnline, setIsOnline] = useState(true);
   const [syncStatus, setSyncStatus] = useState<'synced' | 'syncing' | 'offline'>('synced');
+  const [activeUser, setActiveUser] = useState<ActiveUser>(getActiveUser());
+
+  useEffect(() => {
+    setActiveUser(getActiveUser());
+    const unsub = subscribeToUserChange((u) => {
+      setActiveUser(u);
+    });
+    return () => unsub();
+  }, []);
 
   useEffect(() => {
     const handleOnline = () => {
@@ -52,15 +64,18 @@ export default function Header() {
                 Mittsure Field Manager
               </span>
               <span className="hidden sm:inline-block px-2.5 py-0.5 text-[11px] font-bold glass-pill text-[#0F1B31]">
-                Mysuru Hub
+                {activeUser.targetDistrict === 'ALL' ? 'All Districts' : `${activeUser.targetDistrict} Territory`}
               </span>
             </div>
             <div className="flex items-center gap-1.5 text-xs text-[#59627E]">
-              <span className="font-semibold text-[#0F182F]">Kalyan Ashrith</span>
+              <span className="font-bold text-[#0F182F] flex items-center gap-1">
+                <User className="w-3.5 h-3.5 text-emerald-600" />
+                <span>{activeUser.name}</span>
+              </span>
               <span>•</span>
-              <span className="flex items-center gap-1 text-[#4A78B0] font-medium">
-                <MapPin className="w-3.5 h-3.5 text-[#4A78B0]" />
-                Bogadi 2nd Stage PG Base
+              <span className="flex items-center gap-1 text-[#4A78B0] font-medium truncate max-w-[200px]" title={activeUser.baseLocation}>
+                <MapPin className="w-3.5 h-3.5 text-[#4A78B0] flex-shrink-0" />
+                <span className="truncate">{activeUser.baseLocation.split(',')[0]} Base</span>
               </span>
             </div>
           </div>
@@ -68,6 +83,18 @@ export default function Header() {
 
         {/* Sync & Quick Action */}
         <div className="flex items-center gap-2 sm:gap-3">
+          {/* Switch Profile / Onboard Action Button */}
+          <Link
+            href="/#onboarding-portal"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent('mittsure_open_onboarding'));
+            }}
+            className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white/80 hover:bg-white text-[#0F1B31] border border-white/90 shadow-xs transition active:scale-95"
+            title="Switch Representative or Upload Allotment PDF"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+            <span>{activeUser.isDefaultLead ? 'Switch Profile / Upload PDF' : 'Switch Workspace'}</span>
+          </Link>
           {/* Online/Sync Status Indicator */}
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold glass-pill">
             {syncStatus === 'synced' && (

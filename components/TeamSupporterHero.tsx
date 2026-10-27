@@ -26,7 +26,9 @@ import {
   HelpCircle,
   X,
   RotateCcw,
+  Lock,
 } from 'lucide-react';
+import { getActiveUser, setActiveUser, DEFAULT_LEAD_USER, ActiveUser } from '@/lib/activeUser';
 
 interface SupporterSchool {
   stopNumber: number;
@@ -116,6 +118,19 @@ export default function TeamSupporterHero() {
     }
   }, []);
 
+  // Listen for global switch profile / open onboarding events
+  useEffect(() => {
+    const handler = () => {
+      setIsExpanded(true);
+      const el = document.getElementById('onboarding-portal');
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+    window.addEventListener('mittsure_open_onboarding', handler);
+    return () => window.removeEventListener('mittsure_open_onboarding', handler);
+  }, []);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
@@ -131,6 +146,21 @@ export default function TeamSupporterHero() {
       } catch (e) {}
       return next;
     });
+  };
+
+  const handleSwitchToLead = () => {
+    const lead = DEFAULT_LEAD_USER;
+    setActiveUser(lead);
+    setRepresentativeName(lead.name);
+    setPhone(lead.phone);
+    setBaseLocation(lead.baseLocation);
+    setTargetDistrict(lead.targetDistrict);
+    setSupporterData(null);
+    setSelectedFile(null);
+    setPastedNotes('');
+    try {
+      localStorage.removeItem('mittsure_team_supporter_data');
+    } catch (e) {}
   };
 
   const handleGenerateSupporter = async (e: React.FormEvent) => {
@@ -169,6 +199,28 @@ export default function TeamSupporterHero() {
         try {
           localStorage.setItem('mittsure_team_supporter_data', JSON.stringify(json.supporterGuide));
         } catch (e) {}
+
+        // Automate personal user session across entire CRM
+        const isLead =
+          representativeName.toLowerCase().includes('kalyan') ||
+          representativeName.toLowerCase().includes('ashrith');
+
+        const newUser: ActiveUser = {
+          id: isLead ? 'KA-REP-01' : `REP-${Date.now().toString(36).toUpperCase()}`,
+          name: representativeName.trim(),
+          phone: phone.trim(),
+          email: email.trim(),
+          baseLocation: baseLocation.trim(),
+          baseLat: 12.3021,
+          baseLng: 76.6178,
+          targetDistrict,
+          dailyGoal: parseInt(dailyGoal, 10) || 7,
+          isDefaultLead: isLead,
+          uploadedPdfName: selectedFile?.name,
+          lastActive: new Date().toISOString(),
+        };
+        setActiveUser(newUser);
+
         setIsExpanded(true);
       } else {
         setErrorMessage(json.error || 'Failed to generate supporter guide.');
@@ -191,7 +243,7 @@ export default function TeamSupporterHero() {
   };
 
   const handleResetAgent = () => {
-    if (confirm('Clear current team supporter session and upload a new PDF?')) {
+    if (confirm('Clear current personal session and onboard a new member or upload a new PDF?')) {
       setSupporterData(null);
       setSelectedFile(null);
       setPastedNotes('');
@@ -203,7 +255,10 @@ export default function TeamSupporterHero() {
   };
 
   return (
-    <div className="glass-panel rounded-3xl p-5 sm:p-6 shadow-sm border border-white/90 relative overflow-hidden transition-all duration-300">
+    <div
+      id="onboarding-portal"
+      className="glass-panel rounded-3xl p-5 sm:p-6 shadow-sm border border-white/90 relative overflow-hidden transition-all duration-300"
+    >
       {/* Background Gradient Accent */}
       <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-gradient-to-br from-emerald-400/20 via-sky-400/15 to-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -275,7 +330,28 @@ export default function TeamSupporterHero() {
         <div className="mt-5 pt-4 border-t border-white/70 relative z-10 space-y-5">
           {!supporterData ? (
             /* Upload & Registration Form */
-            <form onSubmit={handleGenerateSupporter} className="space-y-4">
+            <div className="space-y-4">
+              {/* Quick Profile Switcher Bar */}
+              <div className="p-3 bg-white/70 border border-white/80 rounded-2xl flex items-center justify-between gap-3 flex-wrap text-xs shadow-xs">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-extrabold text-[#59627E] text-[11px] uppercase tracking-wider">
+                    Quick Profile Launch:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleSwitchToLead}
+                    className="px-3 py-1.5 rounded-xl bg-[#0F1B31] text-white font-bold text-xs hover:bg-black transition shadow-xs flex items-center gap-1.5 active:scale-95"
+                  >
+                    <User className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Launch as Lead: Kalyan Ashrith (Mysuru)</span>
+                  </button>
+                </div>
+                <span className="text-[11px] text-[#59627E] font-medium">
+                  Team members: Upload your PDF below to automate your private personal workspace.
+                </span>
+              </div>
+
+              <form onSubmit={handleGenerateSupporter} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* PDF File Uploader Card */}
                 <div className="md:col-span-1 p-4 rounded-2xl bg-white/75 border border-dashed border-slate-300 hover:border-emerald-500 transition flex flex-col justify-center items-center text-center space-y-2.5">
@@ -406,9 +482,26 @@ export default function TeamSupporterHero() {
                 </button>
               </div>
             </form>
+          </div>
           ) : (
             /* Active Supporter Workspace & Cheatsheet */
             <div className="space-y-4">
+              {/* Personal Data Isolation Badge */}
+              <div className="p-3 rounded-2xl bg-indigo-50/80 border border-indigo-200/90 text-indigo-950 text-xs flex items-center justify-between gap-3 flex-wrap shadow-xs">
+                <div className="flex items-center gap-2">
+                  <Lock className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+                  <span className="font-medium">
+                    <strong>Personal Workspace Active:</strong> Operating as <strong>{supporterData.representative.name}</strong> ({supporterData.representative.targetDistrict} Territory). Other team members&apos; completed visits and route plans are isolated and not mixed with your workspace.
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleSwitchToLead}
+                  className="px-2.5 py-1 rounded-xl bg-white border border-indigo-200 text-[#0F1B31] font-bold text-[11px] hover:bg-indigo-100 transition shadow-xs"
+                >
+                  Switch to Kalyan (Lead)
+                </button>
+              </div>
               {/* Daily Brief Pill Bar */}
               <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 via-teal-50 to-indigo-50 border border-emerald-200/80 flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-xs">
                 <div>

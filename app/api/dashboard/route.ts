@@ -1,21 +1,62 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const repName = searchParams.get('repName')?.trim() || 'Nichhenametla Kalyan Ashrith';
+    const repId = searchParams.get('repId')?.trim() || 'KA-REP-01';
+    const district = searchParams.get('district')?.trim() || 'ALL';
+
+    const isLeadKalyan =
+      repName.toLowerCase().includes('kalyan') || repName.toLowerCase().includes('ashrith');
+
     const settings = await prisma.settings.findUnique({ where: { id: 'default' } });
     const targetGoal = settings?.target_progress_goal || 300;
     const dailyTarget = settings?.default_daily_schools || 5;
     const weeklyTarget = settings?.target_schools_per_week || 30;
 
-    const totalAssigned = await prisma.school.count();
+    // Scope totalAssigned by district if territory is specified
+    const districtFilter = district !== 'ALL' ? { district } : {};
+    const totalAssigned = await prisma.school.count({ where: districtFilter });
 
-    // Personally completed unique schools by Kalyan Ashrith
-    const personallyCompletedCount = await prisma.school.count({
+    let personallyCompletedCount = 0;
+    let totalVisitEvents = 0;
+
+    if (isLeadKalyan) {
+      // Personally completed unique schools by Kalyan Ashrith
+      personallyCompletedCount = await prisma.school.count({
+        where: {
+          ...districtFilter,
+          visited_by_current_user: true,
+        },
+      });
+      totalVisitEvents = await prisma.schoolVisit.count({
+        where: {
+          is_current_representative: true,
+        },
+      });
+    } else {
+      // Isolated personal count for the active team member
+      const memberVisits = await prisma.schoolVisit.findMany({
+        where: {
+          representative: repName,
+          school: districtFilter,
+        },
+        select: { school_id: true },
+      });
+      const uniqueSchoolIds = new Set(memberVisits.map((v) => v.school_id));
+      personallyCompletedCount = uniqueSchoolIds.size;
+      totalVisitEvents = memberVisits.length;
+    }
+
+    const previousRepVisitedCount = await prisma.school.count({
       where: {
-        visited_by_current_user: true,
+        ...districtFilter,
+        visited_by_previous_rep: true,
+        visited_by_current_user: false,
       },
     });
 
@@ -31,21 +72,6 @@ export async function GET() {
         ? Number(((personallyCompletedCount / targetGoal) * 100).toFixed(2))
         : 0;
 
-    // Previous representative visited schools count
-    const previousRepVisitedCount = await prisma.school.count({
-      where: {
-        visited_by_previous_rep: true,
-        visited_by_current_user: false,
-      },
-    });
-
-    // Total visit events by Kalyan (includes revisits)
-    const totalVisitEvents = await prisma.schoolVisit.count({
-      where: {
-        is_current_representative: true,
-      },
-    });
-
     // Today's date range
     const now = new Date();
     const isSundayToday = now.getDay() === 0;
@@ -57,7 +83,9 @@ export async function GET() {
 
     const todayVisitsCount = await prisma.schoolVisit.count({
       where: {
-        is_current_representative: true,
+        ...(isLeadKalyan
+          ? { is_current_representative: true }
+          : { representative: repName }),
         visit_date: {
           gte: startOfToday,
           lte: endOfToday,

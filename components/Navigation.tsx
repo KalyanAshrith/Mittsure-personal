@@ -18,25 +18,28 @@ import {
   Trophy,
 } from 'lucide-react';
 import { subscribeToDataChanges } from '@/lib/realtimeSync';
+import { getActiveUser, subscribeToUserChange, ActiveUser, buildUserQueryParams } from '@/lib/activeUser';
 
 export default function Navigation() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [activeUser, setActiveUser] = useState<ActiveUser>(getActiveUser());
   const [counts, setCounts] = useState<{ completed: number; remaining: number; total: number }>({
-    completed: 61,
-    remaining: 426,
-    total: 487,
+    completed: 151,
+    remaining: 344,
+    total: 495,
   });
 
   const fetchCounts = async () => {
     try {
-      const res = await fetch('/api/dashboard', { cache: 'no-store' });
+      const q = buildUserQueryParams(activeUser);
+      const res = await fetch(`/api/dashboard?${q}`, { cache: 'no-store' });
       const data = await res.json();
       if (data?.kpis) {
         setCounts({
-          completed: data.kpis.completed || 61,
-          remaining: data.kpis.remaining || 426,
-          total: data.kpis.totalAssigned || 487,
+          completed: data.kpis.completed || 0,
+          remaining: data.kpis.remaining || 0,
+          total: data.kpis.totalAssigned || 495,
         });
       }
     } catch {
@@ -45,12 +48,20 @@ export default function Navigation() {
   };
 
   useEffect(() => {
+    setActiveUser(getActiveUser());
+    const unsub = subscribeToUserChange((u) => {
+      setActiveUser(u);
+    });
+    return () => unsub();
+  }, []);
+
+  useEffect(() => {
     fetchCounts();
     const unsubscribe = subscribeToDataChanges(() => {
       fetchCounts();
     });
     return () => unsubscribe();
-  }, [pathname]);
+  }, [pathname, activeUser]);
 
   const navItems = [
     {
@@ -115,19 +126,24 @@ export default function Navigation() {
         {/* Representative & PG Base Card */}
         <div className="mx-0.5 mb-5 p-3.5 rounded-2xl glass-card border border-white/90 space-y-2">
           <div>
-            <span className="text-[9px] font-black text-[#59627E] uppercase tracking-wider">
-              Field Representative
-            </span>
-            <p className="text-xs font-black text-[#020C21] leading-tight">
-              Nichhenametla Kalyan Ashrith
+            <div className="flex items-center justify-between">
+              <span className="text-[9px] font-black text-[#59627E] uppercase tracking-wider">
+                {activeUser.isDefaultLead ? 'Field Lead' : 'Personal Field Rep'}
+              </span>
+              <span className="text-[9px] font-mono font-bold bg-[#0F1B31] text-white px-1.5 py-0.2 rounded">
+                {activeUser.targetDistrict}
+              </span>
+            </div>
+            <p className="text-xs font-black text-[#020C21] leading-tight mt-1 truncate" title={activeUser.name}>
+              {activeUser.name}
             </p>
           </div>
           <div className="pt-2 border-t border-slate-200/70 flex items-start gap-1.5 text-[11px] text-[#59627E]">
             <MapPin className="w-3.5 h-3.5 text-[#4A78B0] flex-shrink-0 mt-0.5" />
-            <div>
-              <span className="font-bold text-[#0F182F]">PG Base Location:</span>
-              <p className="text-[10px] text-[#59627E] leading-tight">
-                661, Bogadi 2nd Stage, Mysuru
+            <div className="min-w-0">
+              <span className="font-bold text-[#0F182F]">Base Location:</span>
+              <p className="text-[10px] text-[#59627E] leading-tight truncate" title={activeUser.baseLocation}>
+                {activeUser.baseLocation}
               </p>
             </div>
           </div>

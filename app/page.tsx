@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { SchoolData } from '@/lib/types';
 import { subscribeToDataChanges, notifyDataChange } from '@/lib/realtimeSync';
+import { getActiveUser, subscribeToUserChange, buildUserQueryParams, ActiveUser } from '@/lib/activeUser';
 import TeamSupporterHero from '@/components/TeamSupporterHero';
 
 export default function DashboardPage() {
@@ -34,13 +35,16 @@ export default function DashboardPage() {
   const [areaBreakdown, setAreaBreakdown] = useState<any[]>([]);
   const [togglingSchoolId, setTogglingSchoolId] = useState<string | null>(null);
   const [generatingDayOne, setGeneratingDayOne] = useState(false);
+  const [activeUser, setActiveUser] = useState<ActiveUser>(getActiveUser());
 
-  const fetchData = async () => {
+  const fetchData = async (user?: ActiveUser) => {
     try {
       setLoading(true);
+      const targetUser = user || activeUser;
+      const q = buildUserQueryParams(targetUser);
       const [dashRes, areaRes] = await Promise.all([
-        fetch('/api/dashboard', { cache: 'no-store' }),
-        fetch('/api/schools/area-breakdown?sortBy=proximity', { cache: 'no-store' }),
+        fetch(`/api/dashboard?${q}`, { cache: 'no-store' }),
+        fetch(`/api/schools/area-breakdown?sortBy=proximity&${q}`, { cache: 'no-store' }),
       ]);
 
       if (dashRes.ok) {
@@ -59,11 +63,22 @@ export default function DashboardPage() {
   };
 
   useEffect(() => {
-    fetchData();
+    setActiveUser(getActiveUser());
+    fetchData(getActiveUser());
+
+    const unsubUser = subscribeToUserChange((u) => {
+      setActiveUser(u);
+      fetchData(u);
+    });
+
     const unsubscribe = subscribeToDataChanges(() => {
       fetchData();
     });
-    return () => unsubscribe();
+
+    return () => {
+      unsubUser();
+      unsubscribe();
+    };
   }, []);
 
   const handleQuickToggle = async (schoolId: string, currentVisited: boolean) => {
